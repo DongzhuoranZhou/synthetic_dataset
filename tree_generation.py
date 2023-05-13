@@ -4,15 +4,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def T1_generation(max_depth, max_nodes, save_path=None):
+def T1_generation(height, max_nodes, max_witdh=3,start=0,save_path=None):
+    # basic graph
     # max_depth = 6
     # max_nodes = 300 # just for safe
     T1 = nx.DiGraph()
     # G = nx.Graph()
-    T1.add_node(0)
+    T1.add_node(start)
     current_depth = max(nx.shortest_path_length(T1, 0).values())
     iter = 0
-    while current_depth <= max_depth - 1 and T1.number_of_nodes() <= max_nodes - 1:
+    while current_depth <= height - 1 and T1.number_of_nodes() <= max_nodes - 1:
         iter += 1
         # print("iter", iter)
         current_depth = max(nx.shortest_path_length(T1, target=0).values())
@@ -23,19 +24,25 @@ def T1_generation(max_depth, max_nodes, save_path=None):
         # print("nodes", T1.nodes())
         # print("current_depth", current_depth)
         # print("leaves_nodes", potential_target_nodes)
-
-        target_node = random.sample(potential_target_nodes, 1)[0]
-
+        higher_than_max_witdh = True
+        while higher_than_max_witdh:
+            target_node = random.sample(potential_target_nodes, 1)[0]
+            current_in_degree = T1.in_degree(target_node)
+            if current_in_degree + 1 < max_witdh:
+                higher_than_max_witdh = False
         # print("sampled leaf_node", target_node)
         Y = np.random.poisson(1)
 
         if Y:  # Y == 0:
-            for i in range(Y + 1):
+            for i in range(min(Y+1,max_witdh)):
                 # print("add node", T1.number_of_nodes(), "to node", target_node)
                 new_node = T1.number_of_nodes()
                 T1.add_node(new_node)
                 T1.add_edge(new_node, target_node)  # add edge from leaf to new node
                 # print(T1.nodes())
+                current_depth = max(nx.shortest_path_length(T1, target=0).values())
+                if T1.number_of_nodes() > max_nodes - 1:
+                    break
 
     if save_path:
         fig = plt.figure()
@@ -86,5 +93,5 @@ def T2_generation(G, save_path=None):
 
 
 if __name__ == "__main__":
-    T1 = T1_generation(6, 100, save_path="T1.png")
+    T1 = T1_generation(10, 5000, save_path="T1.png")
     T2 = T2_generation(T1, save_path="T2.png")
