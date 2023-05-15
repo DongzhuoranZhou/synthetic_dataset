@@ -27,9 +27,9 @@ class ConstFeatureGen(FeatureGen):
 
     def gen_node_features(self, G):
         feat_dict = {i:{'feat': np.array(self.val, dtype=np.float32)} for i in G.nodes()}
-        print ('feat_dict[0]["feat"]:', feat_dict[0]['feat'].dtype)
+        print ('feat_dict[0]["x"]:', feat_dict[0]['x'].dtype)
         nx.set_node_attributes(G, feat_dict)
-        print ('G.nodes[0]["feat"]:', G.nodes[0]['feat'].dtype)
+        print ('G.nodes[0]["x"]:', G.nodes[0]['x'].dtype)
 
 
 class GaussianFeatureGen(FeatureGen):
@@ -51,7 +51,7 @@ class GaussianFeatureGen(FeatureGen):
         num_nodes = G.number_of_nodes()
         embeddings = GaussianFeatureGen.initialize_node_embeddings(num_nodes, self.embedding_dim)
         feat_dict = {
-                i: {"feat": embeddings[i]} for i in range(embeddings.shape[0])
+                i: {"x": embeddings[i]} for i in range(embeddings.shape[0])
             }
         nx.set_node_attributes(G, feat_dict)
 

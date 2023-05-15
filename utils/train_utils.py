@@ -21,3 +21,11 @@ def build_optimizer(args, params, weight_decay=0.0):
     elif args.opt_scheduler == 'cos':
         scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.opt_restart)
     return scheduler, optimizer
+
+
+
+def AcontainsB(A, listB):
+    # A: string; listB: list of strings
+    for s in listB:
+        if s in A: return True
+    return False

@@ -1,3 +1,5 @@
+import networkx as nx
+
 import configs
 import os
 import gengraph
@@ -10,7 +12,10 @@ import time
 import torch.nn as nn
 import sklearn.metrics as metrics
 import utils.train_utils as train_utils
-
+import torch
+from torch_geometric.utils import from_networkx
+import torch_geometric
+from Dataloader import load_data
 def evaluate_node(ypred, labels, train_idx, test_idx):
     _, pred_labels = torch.max(ypred, 2)
     pred_labels = pred_labels.numpy()
@@ -34,8 +39,13 @@ def evaluate_node(ypred, labels, train_idx, test_idx):
     }
     return result_train, result_test
 
-def train_node_classifier(G, labels, model, args, writer=None):
+def train_node_classifier(G, labels, args, writer=None):
     # train/test split only for nodes
+    device = torch.device(f'cuda:{args.cuda_num}' if args.cuda else 'cpu')
+    Model = getattr(importlib.import_module("models"), args.type_model)
+    model = Model(args)
+    model.to(device)
+
     num_nodes = G.number_of_nodes()
     num_train = int(num_nodes * args.train_ratio)
     idx = [i for i in range(num_nodes)]
@@ -44,16 +54,19 @@ def train_node_classifier(G, labels, model, args, writer=None):
     train_idx = idx[:num_train]
     test_idx = idx[num_train:]
 
-    data = gengraph.preprocess_input_graph(G, labels)
-    labels_train = torch.tensor(data["labels"][:, train_idx], dtype=torch.long)
+    pyg_G = from_networkx(G)
+    # data = gengraph.preprocess_input_graph(G, labels)
+    data = load_data(args.dataset, which_run=0)
+    loader = torch_geometric.data.DataLoader([pyg_G], batch_size=1)
+    labels_train = torch.tensor(data["y"][:, train_idx], dtype=torch.long)
     adj = torch.tensor(data["adj"], dtype=torch.float)
-    x = torch.tensor(data["feat"], requires_grad=True, dtype=torch.float)
+    x = torch.tensor(data["x"], requires_grad=True, dtype=torch.float)
     scheduler, optimizer = train_utils.build_optimizer(
         args, model.parameters(), weight_decay=args.weight_decay
     )
     model.train()
     ypred = None
-    for epoch in range(args.num_epochs):
+    for epoch in range(args.epochs):
         begin_time = time.time()
         model.zero_grad()
 
@@ -135,15 +148,17 @@ def train_node_classifier(G, labels, model, args, writer=None):
 
 def syn_task1(args, writer=None,type_model="GCN"):
     """
-    For tree1 and tree2, the node features are randomly generated. p(tree1)!=p(tree2)
+    For single tree1 and tree2, the node features are randomly generated. p(tree1)!=p(tree2)
     :param args:
     :param writer:
     :return:
     """
     # data
-    G, labels, name = gengraph.gen_syn1(
-        feature_generator=featgen.GaussianFeatureGen(embedding_dim=args.input_dim)
-    )
+    G_list = gengraph.gen_syn1(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,
+                            max_nodes=50)
+    G_list = [T for tup in G_list for T in tup]
+    G = nx.disjoint_union_all(G_list)
+    labels = G.nodes[G.root].data["label"]
     num_classes = max(labels) + 1
     Model = getattr(importlib.import_module("models"), type_model)
 
@@ -163,16 +178,63 @@ def syn_task1(args, writer=None,type_model="GCN"):
 
     train_node_classifier(G, labels, model, args, writer=writer)
 
+
+def syn_task2(args, writer=None,type_model="GCN"):
+    """
+    For tree1 and tree2, the node features are randomly generated. p(tree1)!=p(tree2)
+    :param args:
+    :param writer:
+    :return:
+    """
+    # data
+    # G, labels, name = gengraph.gen_syn1(
+    #     feature_generator=featgen.GaussianFeatureGen(embedding_dim=args.input_dim)
+    # )
+    # embedding_dim = 16
+    # G_list = gen_syn1(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,
+    #                         max_nodes=50)
+    # G_list = gengraph.gen_syn2(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=4,
+    #                         max_nodes=50)
+    # G_list = [T for tup in G_list for T in tup]
+    # G = nx.disjoint_union_all(G_list)
+
+    G = torch.load("dataset/G_10_pairs_depth_3.pt")
+
+    labels = nx.get_node_attributes(G, "label")
+    # num_classes = 2
+    # Model = getattr(importlib.import_module("models"), type_model)
+    #
+    # # print("Method:", args.method)
+    # # model = Model(
+    # #     args.input_dim,
+    # #     args.hidden_dim,
+    # #     args.output_dim,
+    # #     num_classes,
+    # #     args.num_gc_layers,
+    # #     bn=args.bn,
+    # #     args=args,
+    # # )
+    #
+    # model = Model(args)
+    #
+    # device = torch.device(f'cuda:{args.cuda_num}' if args.cuda else 'cpu')
+    # model = model.to
+
+    train_node_classifier(G, labels, args, writer=writer)
+
 def main():
     prog_args = configs.arg_parse()
-    if prog_args.gpu:
-        os.environ["CUDA_VISIBLE_DEVICES"] = prog_args.cuda
-        print("CUDA", prog_args.cuda)
+    if prog_args.cuda:
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(prog_args.cuda_num)
+        print("CUDA", prog_args.cuda_num)
     else:
         print("Using CPU")
+    # torch.device(f'cuda:{prog_args.cuda_num}' if prog_args.cuda else 'cpu')
     if prog_args.dataset is not None:
         if prog_args.dataset == "syn1":
             syn_task1(prog_args)
+        if prog_args.dataset == "syn2":
+            syn_task2(prog_args)
 
 if __name__ == "__main__":
     main()

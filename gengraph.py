@@ -5,7 +5,7 @@ from utils import featgen, labelgen
 import numpy as np
 import networkx as nx
 import copy
-
+import torch
 ####################################
 #
 # Experiment utilities
@@ -20,22 +20,23 @@ def preprocess_input_graph(G, labels, normalize_adj=False):
     Returns:
         A dictionary containing adjacency, node features and labels
     """
-    adj = np.array(nx.to_numpy_matrix(G))
+    adj = np.array(nx.to_numpy_array(G))
     if normalize_adj:
         sqrt_deg = np.diag(1.0 / np.sqrt(np.sum(adj, axis=0, dtype=float).squeeze()))
         adj = np.matmul(np.matmul(sqrt_deg, adj), sqrt_deg)
 
     existing_node = list(G.nodes)[-1]
-    feat_dim = G.nodes[existing_node]["feat"].shape[0]
+    feat_dim = G.nodes[existing_node]["x"].shape[0]
     f = np.zeros((G.number_of_nodes(), feat_dim), dtype=float)
     for i, u in enumerate(G.nodes()):
-        f[i, :] = G.nodes[u]["feat"]
+        f[i, :] = G.nodes[u]["x"]
 
     # add batch dim
     adj = np.expand_dims(adj, axis=0)
     f = np.expand_dims(f, axis=0)
+    labels = np.array(list(labels.values()))
     labels = np.expand_dims(labels, axis=0)
-    return {"adj": adj, "feat": f, "labels": labels}
+    return {"adj": adj, "x": f, "y": labels}
 
 
 ####################################
@@ -103,7 +104,7 @@ def gen_syn1(height=8, feature_generator=None, max_width=2, max_nodes=20, embedd
     depth_generator.gen_node_depths(T1)
 
     # add label to T1 root node
-    T1.nodes[0]["label"] = np.array([1])
+    T1.nodes[0]["y"] = np.array([1], dtype=int)[0]
     # minimal possible change, to make sure T1 follows the rule of p(T1)
     depth_T1 = max(nx.shortest_path_length(T1, target=0).values())
     if depth_T1 != height:
@@ -113,13 +114,13 @@ def gen_syn1(height=8, feature_generator=None, max_width=2, max_nodes=20, embedd
     l = height - 2
     l_depth_nodes = [node for node, depth in depth_node.items() if depth == l]
     for node in l_depth_nodes:
-        if T1.nodes[node]["feat"][0] < 1:
-            T1.nodes[node]["feat"][0] = np.random.uniform(1, 10) / np.sqrt(
+        if T1.nodes[node]["x"][0] < 1:
+            T1.nodes[node]["x"][0] = np.random.uniform(1, 10) / np.sqrt(
                 embedding_dim)  # TODO: change to a random number larger than 1
-            T1.nodes[node]["feat"][0] = 1 + (1  - T1.nodes[node]["feat"][0])
+            T1.nodes[node]["x"][0] = 1 + (1  - T1.nodes[node]["x"][0])
     # create T2 by changing the first element on the level l
     T2 = copy.deepcopy(T1)
-    T2.nodes[0]["label"] = np.array([0])
+    T2.nodes[0]["y"] = np.array([0], dtype=int)[0]
     # minimal possible change
     # depth_T2 = max(nx.shortest_path_length(T2, target=0).values())
     # if depth_T2 != height:
@@ -129,8 +130,8 @@ def gen_syn1(height=8, feature_generator=None, max_width=2, max_nodes=20, embedd
     # l = height - 2
     # l_depth_nodes = [node for node, depth in depth_node.items() if depth == l]
     for node in l_depth_nodes:
-        if T2.nodes[node]["feat"][0] >= 1:
-            T2.nodes[node]["feat"][0] = np.random.uniform(-10, 1) / np.sqrt(
+        if T2.nodes[node]["x"][0] >= 1:
+            T2.nodes[node]["x"][0] = np.random.uniform(-10, 1) / np.sqrt(
                 embedding_dim)  # TODO: change to a random number smaller than 1
             # T2.nodes[node]["feat"][0] = 1 - (T2.nodes[node]["feat"][0] - 1)
 
@@ -158,4 +159,11 @@ if __name__ == "__main__":
     #                         max_nodes=50)
     G_list = gen_syn2(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=4,
                             max_nodes=50)
+    # for tup in G_list:
+    #     (T1, T2)= tup
+    #     G_list.append(T1)
+    #     G_list.append(T2)
+    G_list = [T for tup in G_list for T in tup]
+    G = nx.disjoint_union_all(G_list)
+    torch.save(G, "dataset/G_10_pairs_depth_3.pt")
     pass

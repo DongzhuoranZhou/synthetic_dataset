@@ -43,6 +43,10 @@ def T1_generation(height, max_nodes, max_witdh=3,start=0,save_path=None):
                 current_depth = max(nx.shortest_path_length(T1, target=0).values())
                 if T1.number_of_nodes() > max_nodes - 1:
                     break
+                current_in_degree = T1.in_degree(target_node)
+                if current_in_degree + 1 > max_witdh:
+                    break
+
 
     if save_path:
         fig = plt.figure()

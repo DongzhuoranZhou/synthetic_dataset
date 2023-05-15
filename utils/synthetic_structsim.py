@@ -20,6 +20,7 @@ def tree(height, max_nodes, max_width, start, ):
     # graph = nx.balanced_tree(r, height)
     graph = T1_generation(height=height, max_nodes=max_nodes, max_witdh=max_width, start=start, save_path="T1.png")  #
     roles = [-1] * graph.number_of_nodes()  # paddings for roles
+    roles = np.array(roles)
     return graph, roles
 
 
