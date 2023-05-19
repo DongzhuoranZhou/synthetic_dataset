@@ -113,11 +113,12 @@ def gen_syn1(height=8, feature_generator=None, max_width=2, max_nodes=20, embedd
     depth_node = nx.shortest_path_length(T1, target=0)
     l = height - 2
     l_depth_nodes = [node for node, depth in depth_node.items() if depth == l]
+
+
     for node in l_depth_nodes:
         if T1.nodes[node]["x"][0] < 1:
-            T1.nodes[node]["x"][0] = np.random.uniform(1, 10) / np.sqrt(
-                embedding_dim)  # TODO: change to a random number larger than 1
-            T1.nodes[node]["x"][0] = 1 + (1  - T1.nodes[node]["x"][0])
+            T1.nodes[node]["x"][0] = np.random.uniform(1, 10)  # TODO: change to a random number larger than 1
+            # T1.nodes[node]["x"][0] = 1 + (1  - T1.nodes[node]["x"][0])
     # create T2 by changing the first element on the level l
     T2 = copy.deepcopy(T1)
     T2.nodes[0]["y"] = np.array([0], dtype=int)[0]
@@ -131,10 +132,12 @@ def gen_syn1(height=8, feature_generator=None, max_width=2, max_nodes=20, embedd
     # l_depth_nodes = [node for node, depth in depth_node.items() if depth == l]
     for node in l_depth_nodes:
         if T2.nodes[node]["x"][0] >= 1:
-            T2.nodes[node]["x"][0] = np.random.uniform(-10, 1) / np.sqrt(
-                embedding_dim)  # TODO: change to a random number smaller than 1
+            T2.nodes[node]["x"][0] = np.random.uniform(-10, 1)  # TODO: change to a random number smaller than 1
             # T2.nodes[node]["feat"][0] = 1 - (T2.nodes[node]["feat"][0] - 1)
 
+    for node in l_depth_nodes:
+        T1.nodes[node]["y"] =  np.array([-2], dtype=int)[0]
+        T2.nodes[node]["y"] =  np.array([-2], dtype=int)[0]
     # T2 = T1.copy()
     # role_id_T2 = role_id_T1.copy()
 
@@ -152,18 +155,25 @@ def gen_syn2(height=8, feature_generator=None, max_width=2, max_nodes=20, embedd
     for _ in range(num_pairs):
         G_list_item = gen_syn1(height=height, feature_generator=feature_generator, max_width=max_width, max_nodes=max_nodes, embedding_dim=embedding_dim)
         G_list.append(G_list_item[0])
+    graph_index_generator = featgen.GraphIndexGen()
+    graph_index_generator.gen_node_graph_index(G_list)
     return G_list
+
 if __name__ == "__main__":
     embedding_dim = 16
+    num_pairs = 1000
+    depth = 10
+    width = 1
     # G_list = gen_syn1(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,
     #                         max_nodes=50)
-    G_list = gen_syn2(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=4,
-                            max_nodes=50)
+    G_list = gen_syn2(height=depth, feature_generator=featgen.GaussianFeatureGen(embedding_dim=embedding_dim), max_width=width,
+                            max_nodes=1000,num_pairs=num_pairs)
     # for tup in G_list:
     #     (T1, T2)= tup
     #     G_list.append(T1)
     #     G_list.append(T2)
     G_list = [T for tup in G_list for T in tup]
     G = nx.disjoint_union_all(G_list)
-    torch.save(G, "dataset/G_10_pairs_depth_3.pt")
-    pass
+    # G = G.to_undirected()
+    print("dataset/G_{}_pairs_depth_{}_width_{}_hdim_{}.pt".format(num_pairs,depth,width,embedding_dim))
+    torch.save(G, "dataset/G_{}_pairs_depth_{}_width_{}_hdim_{}.pt".format(num_pairs,depth,width,embedding_dim))

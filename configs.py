@@ -12,10 +12,20 @@ def reset_dataset_dependent_parameters(args):
         args.lr = 0.005  # 0.005
         args.weight_decay = 5e-4
         args.epochs = 1000
-        args.patience = 100  # 100
+        args.patience = 200  # 100
         args.dim_hidden = 16
         args.activation = 'relu'
-        args.num_layers = 3
+        # args.num_layers = 2
+    if args.dataset == 'Cora':
+        args.num_feats = 1433
+        args.num_classes = 7
+        args.dropout = 0.5  # 0.5
+        args.lr = 0.005  # 0.005
+        args.weight_decay = 5e-4
+        args.epochs = 1000
+        args.patience = 100  # 100
+        args.dim_hidden = 64
+        args.activation = 'relu'
     return args
 
 def arg_parse():
@@ -126,6 +136,9 @@ def arg_parse():
                         choices=['Cora', 'Citeseer', 'Pubmed', 'ogbn-arxiv',
                                  'CoauthorCS', 'CoauthorPhysics', 'AmazonComputers', 'AmazonPhoto',
                                  'TEXAS', 'WISCONSIN', 'ACTOR', 'CORNELL',"syn1","syn2"])
+    parser.add_argument("--type_split", type=str, default="Cora", required=False,
+                        help="The type of dataset split.",
+                        choices=["pair", "single"])
     parser.add_argument('--saved_model_name', type=str, default='results/best_model', help='best model name')
     # build up the common parameter
     parser.add_argument('--random_seed', type=int, default=100)

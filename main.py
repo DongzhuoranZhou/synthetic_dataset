@@ -34,9 +34,10 @@ def main(args):
 
     list_test_acc = []
     list_valid_acc = []
+    list_train_acc = []
     list_train_loss = []
-    if args.compare_model:
-        args = overwrite_with_yaml(args, args.type_model, args.dataset)
+    # if args.compare_model:
+    #     args = overwrite_with_yaml(args, args.type_model, args.dataset)
     print_args(args, logger)
     for seed in range(args.N_exp):
         logging.info(f'seed (which_run) = <{seed}>')
@@ -45,21 +46,23 @@ def main(args):
         set_seed(args)
         torch.cuda.empty_cache()
         trnr = trainer(args, seed)
-        train_loss, valid_acc, test_acc = trnr.train_and_test()
+        train_loss, valid_acc, test_acc, train_acc = trnr.train_and_test()
         list_test_acc.append(test_acc)
         list_valid_acc.append(valid_acc)
         list_train_loss.append(train_loss)
+        list_train_acc.append(train_acc)
 
         del trnr
         torch.cuda.empty_cache()
         gc.collect()
 
         # record training data
-        logging.info('mean and std of test acc: {:.4f}±{:.4f}'.format(
-            np.mean(list_test_acc), np.std(list_test_acc)))
+        logging.info('mean and std of train and test acc: train {:.9f}±{:.9f} test {:.9f}±{:.9f}'.format(
+            np.mean(list_train_acc), np.std(list_train_acc),
+        np.mean(list_test_acc), np.std(list_test_acc)))
 
-    logging.info('final mean and std of test acc with <{}> runs: {:.4f}±{:.4f}'.format(
-        args.N_exp, np.mean(list_test_acc), np.std(list_test_acc)))
+    logging.info('final mean and std of train and test acc with <{}> runs: train {:.9f}±{:.9f} test {:.9f}±{:.9f}'.format(
+        args.N_exp, np.mean(list_train_acc), np.std(list_train_acc), np.mean(list_test_acc), np.std(list_test_acc)))
 
 
 if __name__ == "__main__":

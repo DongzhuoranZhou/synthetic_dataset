@@ -56,7 +56,7 @@ class GaussianFeatureGen(FeatureGen):
         nx.set_node_attributes(G, feat_dict)
 
 
-class DepthGen(metaclass=abc.ABCMeta):
+class DepthGen():
     """Feature Generator base class."""
 
     def __init__(self):
@@ -68,3 +68,29 @@ class DepthGen(metaclass=abc.ABCMeta):
             i: {"depth": depths[i]} for i in range(len(depths))
         }
         nx.set_node_attributes(G, depth_dict)
+
+
+class GraphIndexGen():
+    def __init__(self):
+        pass
+    def gen_node_graph_index(self, G_list):
+        # tree_index_dict = {
+        #     i: {"tree_index": i} for G in G_list for i in range(G.number_of_nodes() )
+        # }
+        # G_tree_index_dict = {}
+        # G_index_dict = {}
+        for G_index, G in enumerate(G_list):
+            (T1,T2) = G
+            for T in (T1,T2):
+                num_nodes = T.number_of_nodes()
+                G_index_dict = {
+                    i: {"graph_index": G_index} for i in range(num_nodes)
+                }
+                nx.set_node_attributes(T, G_index_dict)
+                # for i in range(T.number_of_nodes()):
+                #     G_index_dict[G_index] = G_index
+                # G_tree_index_dict[G_index] = G_index_dict
+        # for G_index, G in enumerate(G_list):
+        #     (T1, T2) = G
+        #     for T in (T1, T2):
+        # nx.set_node_attributes(T, G_tree_index_dict[G_index])

@@ -56,7 +56,7 @@ def train_node_classifier(G, labels, args, writer=None):
 
     pyg_G = from_networkx(G)
     # data = gengraph.preprocess_input_graph(G, labels)
-    data = load_data(args.dataset, which_run=0)
+    data = load_data(args.dataset, type_split=args.type_split)
     loader = torch_geometric.data.DataLoader([pyg_G], batch_size=1)
     labels_train = torch.tensor(data["y"][:, train_idx], dtype=torch.long)
     adj = torch.tensor(data["adj"], dtype=torch.float)

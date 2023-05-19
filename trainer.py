@@ -23,13 +23,14 @@ class trainer(object):
         self.device = torch.device(f'cuda:{args.cuda_num}' if args.cuda else 'cpu')
         self.which_run = which_run
 
-        self.data = load_data(self.dataset, self.which_run)
+        self.data = load_data(self.dataset, self.type_split)
         self.loss_fn = torch.nn.functional.nll_loss
         self.data.to(self.device)
 
         # if args.compare_model:  # only compare model
         Model = getattr(importlib.import_module("models"), self.type_model)
         self.model = Model(args)
+        self.model.double()
         # else:  # compare tricks combinations
         #     self.model = TricksComb(args)
         self.model.to(self.device)
@@ -44,7 +45,8 @@ class trainer(object):
         patience = self.args.patience
         bad_counter = 0.
         val_loss_history = []
-        saved_model_name = self.saved_model_name + '_' + str(self.dataset) + '_' + str(self.type_model) + '_' + str(self.args.num_layers) + '_' +'with_ACM_' + str(self.args.with_ACM) + '.pth'
+        # saved_model_name = self.saved_model_name + '_' + str(self.dataset) + '_' + str(self.type_model) + '_' + str(self.args.num_layers) + '_' +'with_ACM_' + str(self.args.with_ACM) + '.pth'
+        saved_model_name = self.saved_model_name + '_' + str(self.dataset) + '_' + str(self.type_model) + '_' + str(self.args.num_layers) + '.pth'
 
         for epoch in range(self.epochs):
 
@@ -80,16 +82,16 @@ class trainer(object):
 
             # if epoch % 20 == 0:
             if epoch % 20 == 0 or epoch == 1:
-                log = 'Epoch: {:03d}, Train loss: {:.4f}, Val loss: {:.4f}, Test acc: {:.4f}'
-                logging.info(log.format(epoch, loss_train, loss_val, acc_test))
+                log = 'Epoch: {:03d}, Train loss: {:.9f}, Val loss: {:.9f}, Train acc: {:.9f}, Val acc: {:.9f}, Test acc: {:.9f}'
+                logging.info(log.format(epoch, loss_train, loss_val, acc_train, acc_test, acc_test))
             if bad_counter == patience:
                 # self.save_records(is_last=True)
                 logging.info('Early stopping!')
                 break
 
-        logging.info('train_loss: {:.4f}, val_acc: {:.4f}, test_acc:{:.4f}'
+        logging.info('train_loss: {:.9f}, val_acc: {:.9f}, test_acc:{:.9f}'
               .format(best_train_loss, best_val_acc, best_test_acc))
-        return best_train_loss, best_val_acc, best_test_acc
+        return best_train_loss, best_val_acc, best_test_acc, best_train_acc
 
     def train_net(self):
         try:

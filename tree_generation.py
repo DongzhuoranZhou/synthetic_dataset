@@ -28,7 +28,9 @@ def T1_generation(height, max_nodes, max_witdh=3,start=0,save_path=None):
         while higher_than_max_witdh:
             target_node = random.sample(potential_target_nodes, 1)[0]
             current_in_degree = T1.in_degree(target_node)
-            if current_in_degree + 1 < max_witdh:
+            # if current_in_degree + 1 < max_witdh:
+            #     higher_than_max_witdh = False
+            if current_in_degree  < max_witdh:
                 higher_than_max_witdh = False
         # print("sampled leaf_node", target_node)
         Y = np.random.poisson(1)
@@ -44,7 +46,7 @@ def T1_generation(height, max_nodes, max_witdh=3,start=0,save_path=None):
                 if T1.number_of_nodes() > max_nodes - 1:
                     break
                 current_in_degree = T1.in_degree(target_node)
-                if current_in_degree + 1 > max_witdh:
+                if current_in_degree  >= max_witdh:
                     break
 
 
