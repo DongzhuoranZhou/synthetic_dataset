@@ -2,6 +2,8 @@ import gc
 
 import numpy as np
 import torch
+from os.path import exists
+import os
 
 # from options.base_options import BaseOptions
 from trainer import trainer
@@ -9,25 +11,29 @@ from utils.general_utils import set_seed, print_args, overwrite_with_yaml
 import logging
 import configs
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-sh = logging.StreamHandler()
-sh.setFormatter(formatter)
-logger.addHandler(sh)
-
-#
-# fh = logging.FileHandler('logs/log.txt')
-# fh.setFormatter(formatter)
-# logger.addHandler(fh)
-
-
-logging.basicConfig(level=logging.INFO,
-                    )
 
 def main(args):
-    logfilename = "logs/{}_{}layers_{}.log".format(args.type_model, args.num_layers, args.dataset)
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    sh = logging.StreamHandler()
+    sh.setFormatter(formatter)
+    logger.addHandler(sh)
+
+    #
+    # fh = logging.FileHandler('logs/log.txt')
+    # fh.setFormatter(formatter)
+    # logger.addHandler(fh)
+
+    logging.basicConfig(level=logging.INFO,
+                        )
+
+    # logdir = args.logdir
+    if not exists(args.logdir):
+        os.makedirs(args.logdir)
+
+    logfilename = "{}/{}_{}layers_{}.log".format(args.logdir, args.type_model, args.num_layers, args.dataset)
     fh = logging.FileHandler(logfilename)
     fh.setFormatter(formatter)
     logger.addHandler(fh)
@@ -59,13 +65,83 @@ def main(args):
         # record training data
         logging.info('mean and std of train and test acc: train {:.9f}±{:.9f} test {:.9f}±{:.9f}'.format(
             np.mean(list_train_acc), np.std(list_train_acc),
-        np.mean(list_test_acc), np.std(list_test_acc)))
+            np.mean(list_test_acc), np.std(list_test_acc)))
 
-    logging.info('final mean and std of train and test acc with <{}> runs: train {:.9f}±{:.9f} test {:.9f}±{:.9f}'.format(
-        args.N_exp, np.mean(list_train_acc), np.std(list_train_acc), np.mean(list_test_acc), np.std(list_test_acc)))
+    logging.info(
+        'final mean and std of train and test acc with <{}> runs: train {:.9f}±{:.9f} test {:.9f}±{:.9f}'.format(
+            args.N_exp, np.mean(list_train_acc), np.std(list_train_acc), np.mean(list_test_acc), np.std(list_test_acc)))
+
+    for handler in logger.handlers:
+        # 判断处理程序是否是指定的FileHandler
+        if isinstance(handler, logging.FileHandler) and handler.baseFilename == logfilename:
+            # 移除该处理程序
+            logger.removeHandler(handler)
+    logger.handlers.clear()
+    return np.mean(list_train_acc), np.std(list_train_acc), np.mean(list_test_acc), np.std(list_test_acc)
 
 
 if __name__ == "__main__":
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    sh = logging.StreamHandler()
+    sh.setFormatter(formatter)
+    logger.addHandler(sh)
+
+    #
+    # fh = logging.FileHandler('logs/log.txt')
+    # fh.setFormatter(formatter)
+    # logger.addHandler(fh)
+
+    logging.basicConfig(level=logging.INFO,
+                        )
+
     # args = BaseOptions().initialize()
     args = configs.arg_parse()
-    main(args)
+
+    # single
+    # main(args)
+    # multi
+    num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 32]
+    # num_layers_lst = [18,20,22,24,26,28,30]
+    num_feature = args.num_feats
+    acc_lst = []
+    acc_dict = {}
+    if not exists(args.logdir):
+        os.makedirs(args.logdir)
+    # logfilename = "{}/{}_{}layers_{}_summary.log".format(args.logdir, args.type_model, "_".join(str(e) for e in num_layers_lst), args.dataset)
+    # fh = logging.FileHandler(logfilename)
+    # fh.setFormatter(formatter)
+    # logger.addHandler(fh)
+    for num_layers in num_layers_lst:
+        dataset_name = "dataset/G_1000_pairs_depth_{}_width_1_hdim_{}_gap_True.pt".format(num_layers, num_feature)
+        args.num_layers = num_layers
+        args.dataset_name = dataset_name
+        mean_train_acc, std_train_acc, mean_test_acc, std_test_acc = main(args)
+        acc_lst.append((mean_train_acc, std_train_acc, mean_test_acc, std_test_acc))
+        acc_dict[num_layers] = (mean_train_acc, std_train_acc, mean_test_acc, std_test_acc)
+
+
+    # summary log
+    logfilename = "{}/{}_{}layers_{}_summary.log".format(args.logdir, args.type_model, "_".join(str(e) for e in num_layers_lst), args.dataset)
+    fh = logging.FileHandler(logfilename)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+    # for num_layers,acc in zip(num_layers_lst,acc_lst):
+    for num_layer in num_layers_lst:
+        acc = acc_dict[num_layer]
+        mean_train_acc, std_train_acc, mean_test_acc, std_test_acc = acc
+        logging.info(
+            "num_layers: {}, mean_train_acc: {}, std_train_acc: {}, mean_test_acc: {}, std_test_acc: {}".format(
+                num_layers, mean_train_acc, std_train_acc, mean_test_acc, std_test_acc))
+    logging.info("acc_lst: {}".format(acc_lst))
+    logging.info("acc_dict: {}".format(acc_dict))
+    logging.info("num_layers_lst: {}".format(num_layers_lst))
+    for handler in logger.handlers:
+        # 判断处理程序是否是指定的FileHandler
+        if isinstance(handler, logging.FileHandler) and handler.baseFilename == logfilename:
+            # 移除该处理程序
+            logger.removeHandler(handler)
+    logger.handlers.clear()

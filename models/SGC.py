@@ -15,6 +15,7 @@ class SGC(nn.Module):
         # bn used in dataset 'obgn-arxiv'
         # lin_first used in Coauthor_physics due to space limit
         self.bn = True if args.type_norm == 'batch' else False
+        self.pn = True if args.type_norm == 'pair' else False
         # self.bn_ACM = nn.ModuleList([])
         # for i in range(self.num_layers - 1):
         #     self.bn_ACM.append(torch.nn.BatchNorm1d(self.num_feats))
@@ -38,7 +39,10 @@ class SGC(nn.Module):
 
     def forward(self, x, edge_index):
         # implemented based on https://github.com/Tiiiger/SGC/blob/master/citation.py
-        x = self.SGC(x, edge_index, w_for_norm=self.w_for_norm) # ,bn_ACM=self.bn_ACM
+        if self.with_ACM:
+            x = self.SGC(x, edge_index, w_for_norm=self.w_for_norm) # ,bn_ACM=self.bn_ACM
+        else:
+            x = self.SGC(x, edge_index)
         return x
 
 

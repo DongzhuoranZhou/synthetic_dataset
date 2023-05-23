@@ -11,7 +11,16 @@ import torch.nn.functional as F
 import numpy as np
 from torch import nn
 
+class pair_norm(torch.nn.Module):
+    def __init__(self):
+        super(pair_norm, self).__init__()
 
+    def forward(self, x):
+        col_mean = x.mean(dim=0)
+        x = x - col_mean
+        rownorm_mean = (1e-6 + x.pow(2).sum(dim=1).mean()).sqrt()
+        x = x / rownorm_mean
+        return x
 class SGConv(MessagePassing):
     r"""The simple graph convolutional operator from the `"Simplifying Graph
     Convolutional Networks" <https://arxiv.org/abs/1902.07153>`_ paper
@@ -49,7 +58,7 @@ class SGConv(MessagePassing):
 
     def __init__(self, in_channels: int, out_channels: int, K: int = 1,
                  cached: bool = False, add_self_loops: bool = True,
-                 bias: bool = True, bn: bool = True, dropout: float = 0.,
+                 bias: bool = True, bn: bool = True, pn: bool = True, dropout: float = 0.,
                  lin_first: bool = False, **kwargs):
         kwargs.setdefault('aggr', 'add')
         super(SGConv, self).__init__(**kwargs)
@@ -65,11 +74,13 @@ class SGConv(MessagePassing):
         self.lin = Linear(in_channels, out_channels, bias=bias)
 
         self.bn = bn
+        self.pn = pn
         self.dropout = dropout
         self.lin_first = lin_first
         if self.bn:
             self.bn = torch.nn.BatchNorm1d(self.in_channels)
-
+        if self.pn:
+            self.pn = pair_norm()
         if self.lin_first:
             self.cached = False
         self.gcn_norm_type = self.args.gcn_norm_type
@@ -127,6 +138,8 @@ class SGConv(MessagePassing):
 
         if self.bn:
             x = self.bn(x)
+        if self.pn:
+            x = self.pn(x)
         if self.dropout > 0.:
             x = F.dropout(x, p=self.dropout, training=self.training)
 

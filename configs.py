@@ -139,13 +139,15 @@ def arg_parse():
     parser.add_argument("--type_split", type=str, default="Cora", required=False,
                         help="The type of dataset split.",
                         choices=["pair", "single"])
+    parser.add_argument("--dataset_name", type=str, default="dataset/G_1000_pairs_depth_32_width_1_hdim_16_gap_True.pt", required=False,
+                        help="The type of dataset split.")
     parser.add_argument('--saved_model_name', type=str, default='results/best_model', help='best model name')
     # build up the common parameter
     parser.add_argument('--random_seed', type=int, default=100)
     parser.add_argument('--N_exp', type=int, default=100)
     parser.add_argument('--resume', action='store_true', default=False)
     parser.add_argument("--cuda", type=bool, default=True, required=False,
-                        help="run in cuda mode")
+                        help="reproduce in cuda mode")
     parser.add_argument('--cuda_num', type=int, default=0, help="GPU number")
     parser.add_argument('--log_file_name', type=str, default='time_and_memory.log')
 
@@ -153,7 +155,7 @@ def arg_parse():
                         help="0: test tricks, 1: test models")
 
     parser.add_argument('--type_model', type=str, default="GCN",
-                        choices=['GCN', 'GAT', 'SGC', 'GCNII', 'DAGNN', 'GPRGNN', 'APPNP', 'JKNet', 'DeeperGCN'])
+                        choices=['GCN', 'GAT', 'SGC', 'GCNII', 'DAGNN', 'GPRGNN', 'APPNP', 'JKNet', 'DeeperGCN',"EdgeDrop"])
     parser.add_argument('--type_trick', type=str, default="None")
     parser.add_argument('--layer_agg', type=str, default='concat',
                         choices=['concat', 'maxpool', 'attention', 'mean'],

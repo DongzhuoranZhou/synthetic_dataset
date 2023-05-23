@@ -86,7 +86,7 @@ class visualization(object):
             state_dict = torch.load(state_dict_path)
             self.model.load_state_dict(state_dict)
         self.model = self.model.to(self.device)
-        self.model.double()
+        # self.model.double()
         self.model.eval()
         with torch.no_grad():
             logits = self.model(self.data.x, self.data.edge_index)
