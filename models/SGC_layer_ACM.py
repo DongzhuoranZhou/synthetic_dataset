@@ -1,16 +1,26 @@
 from typing import Optional
 from torch_geometric.typing import Adj, OptTensor
-
 from torch import Tensor
 from torch.nn import Linear
 from torch_sparse import SparseTensor, matmul
 from torch_geometric.nn.conv import MessagePassing
-from torch_geometric.nn.conv.gcn_conv import gcn_norm
+# from torch_geometric.nn.conv.gcn_conv import gcn_norm
+from Layers.gcn_conv import gcn_norm
 import torch
 import torch.nn.functional as F
+import numpy as np
 from torch import nn
 
+class pair_norm(torch.nn.Module):
+    def __init__(self):
+        super(pair_norm, self).__init__()
 
+    def forward(self, x):
+        col_mean = x.mean(dim=0)
+        x = x - col_mean
+        rownorm_mean = (1e-6 + x.pow(2).sum(dim=1).mean()).sqrt()
+        x = x / rownorm_mean
+        return x
 class SGConv(MessagePassing):
     r"""The simple graph convolutional operator from the `"Simplifying Graph
     Convolutional Networks" <https://arxiv.org/abs/1902.07153>`_ paper
@@ -48,11 +58,11 @@ class SGConv(MessagePassing):
 
     def __init__(self, in_channels: int, out_channels: int, K: int = 1,
                  cached: bool = False, add_self_loops: bool = True,
-                 bias: bool = True, bn: bool = True, dropout: float = 0.,
+                 bias: bool = True, bn: bool = True, pn: bool = True, dropout: float = 0.,
                  lin_first: bool = False, **kwargs):
         kwargs.setdefault('aggr', 'add')
         super(SGConv, self).__init__(**kwargs)
-
+        self.args = kwargs['args']
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.K = K
@@ -64,56 +74,72 @@ class SGConv(MessagePassing):
         self.lin = Linear(in_channels, out_channels, bias=bias)
 
         self.bn = bn
-        self.layers_bn = nn.ModuleList([])
+        self.pn = pn
         self.dropout = dropout
         self.lin_first = lin_first
         if self.bn:
-            # self.bn = torch.nn.BatchNorm1d(self.in_channels)
-            for k in range(self.K):
-                self.layers_bn.append(torch.nn.BatchNorm1d(self.in_channels))
+            self.bn = torch.nn.BatchNorm1d(self.in_channels)
+        if self.pn:
+            self.pn = pair_norm()
         if self.lin_first:
             self.cached = False
-
+        self.gcn_norm_type = self.args.gcn_norm_type
         self.reset_parameters()
 
     def reset_parameters(self):
         self.lin.reset_parameters()
         self._cached_x = None
 
-
     def forward(self, x: Tensor, edge_index: Adj,
-                edge_weight: OptTensor = None) -> Tensor:
+                edge_weight: OptTensor = None, w_for_norm=None, **kwargs):
 
         if self.lin_first:
             x = self.lin(x)
 
         """"""
+        # self.bn_ACM = kwargs["bn_ACM"]
         cache = self._cached_x
         if cache is None:
             if isinstance(edge_index, Tensor):
                 edge_index, edge_weight = gcn_norm(  # yapf: disable
                     edge_index, edge_weight, x.size(self.node_dim), False,
-                    self.add_self_loops, dtype=x.dtype)
+                    self.add_self_loops, dtype=x.dtype,mode=self.gcn_norm_type,)
             elif isinstance(edge_index, SparseTensor):
                 edge_index = gcn_norm(  # yapf: disable
                     edge_index, edge_weight, x.size(self.node_dim), False,
-                    self.add_self_loops, dtype=x.dtype)
-
+                    self.add_self_loops, dtype=x.dtype,mode=self.gcn_norm_type,)
+            if w_for_norm != None:
+                w_for_norm.data = w_for_norm.abs()
+                print("w_for_norm", w_for_norm)
+                # w_for_norm = torch.ones_like(w_for_norm)
+                # https://zhuanlan.zhihu.com/p/433407462
+                w_for_norm = w_for_norm.data
             for k in range(self.K):
                 # propagate_type: (x: Tensor, edge_weight: OptTensor)
+                if w_for_norm != None and k == 0:
+                    w_for_norm.data = w_for_norm.abs()
+                    print("w_for_norm", w_for_norm)
+                    # x = x - torch.mean(x, dim=0)
+                    # x = self.bn_ACM[k](x)
+                    # x = x.data
+                    x = RiemannAgg(x, w_for_norm)
                 x = self.propagate(edge_index, x=x, edge_weight=edge_weight,
                                    size=None)
-                if self.bn:
-                    # x = self.bn(x)
-                    x = self.layers_bn[k](x)
-                    x = x.data
+                if k != self.K - 1 and w_for_norm != None:
+                    # x = x - torch.mean(x, dim=0)
+                    # x = self.bn_ACM[k](x)
+                    # x = x.data
+                    x = RiemannAgg(x, w_for_norm)
+
             if self.cached:
                 self._cached_x = x
         else:
             x = cache
 
-        # if self.bn:
-        #     x = self.bn(x)
+        if self.bn:
+            x = self.bn(x)
+        if self.pn:
+            x = self.pn(x)
         if self.dropout > 0.:
             x = F.dropout(x, p=self.dropout, training=self.training)
 
@@ -121,7 +147,6 @@ class SGConv(MessagePassing):
             x = self.lin(x)
 
         return x
-
 
     def message(self, x_j: Tensor, edge_weight: Tensor) -> Tensor:
         return edge_weight.view(-1, 1) * x_j
@@ -133,3 +158,24 @@ class SGConv(MessagePassing):
         return '{}({}, {}, K={})'.format(self.__class__.__name__,
                                          self.in_channels, self.out_channels,
                                          self.K)
+
+
+# def RiemannAgg(x, w):
+#     squar_x = torch.square(x)
+#     squar_x_w = torch.mul(squar_x, w)
+#     sum_squar_x_w = torch.sum(squar_x_w, dim=1)
+#     sqrt_x_w = torch.sqrt(sum_squar_x_w + 1e-6)
+#     sqrt_x_w = torch.unsqueeze(sqrt_x_w, dim=1)
+#     x = torch.div(x, sqrt_x_w)
+#     return x
+
+def RiemannAgg(x, w):
+
+    squar_x = torch.square(x)
+    squar_x_w = torch.mul(squar_x, w)
+    sum_squar_x_w = torch.sum(squar_x_w, dim=1)
+    sqrt_x_w = torch.sqrt(sum_squar_x_w + 1e-2)
+    sqrt_x_w = torch.unsqueeze(sqrt_x_w, dim=1)
+    x = torch.div(x, sqrt_x_w + 1e-2 ) # + 1
+
+    return x

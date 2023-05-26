@@ -156,7 +156,7 @@ def arg_parse():
                         help="0: test tricks, 1: test models")
 
     parser.add_argument('--type_model', type=str, default="GCN",
-                        choices=['GCN', 'GAT', 'SGC', 'GCNII', 'DAGNN', 'GPRGNN', 'APPNP', 'JKNet', 'DeeperGCN',"EdgeDrop"])
+                        choices=['GCN', 'GAT', 'SGC', 'GCNII', 'DAGNN', 'GPRGNN', 'APPNP', 'JKNet', 'DeeperGCN',"EdgeDrop",'simpleGCN'])
     parser.add_argument('--type_trick', type=str, default="None")
     parser.add_argument('--layer_agg', type=str, default='concat',
                         choices=['concat', 'maxpool', 'attention', 'mean'],

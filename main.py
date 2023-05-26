@@ -106,6 +106,9 @@ if __name__ == "__main__":
     # multi
     num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 32]
     # num_layers_lst = [18,20,22,24,26,28,30]
+    num_layers_lst =  [4, 6, 8, 10, 11, 12, 13, 14, 15, 16,18,20,22,24,26,28,30, 32]
+    num_layers_lst =  [ 3, 4, 5, 6,7, 8, 10, 11, 12, 13, 14, 15, 16,18,20,22,24,26,28,30,32]
+
     num_feature = args.num_feats
     acc_lst = []
     acc_dict = {}
@@ -135,9 +138,10 @@ if __name__ == "__main__":
         mean_train_acc, std_train_acc, mean_test_acc, std_test_acc = acc
         logging.info(
             "num_layers: {}, mean_train_acc: {}, std_train_acc: {}, mean_test_acc: {}, std_test_acc: {}".format(
-                num_layers, mean_train_acc, std_train_acc, mean_test_acc, std_test_acc))
+                num_layer, mean_train_acc, std_train_acc, mean_test_acc, std_test_acc))
     logging.info("acc_lst: {}".format(acc_lst))
     logging.info("acc_dict: {}".format(acc_dict))
+    torch.save((num_layers_lst,acc_dict), "{}/{}_{}layers_{}_summary.pt".format(args.logdir, args.type_model, "_".join(str(e) for e in num_layers_lst), args.dataset))
     logging.info("num_layers_lst: {}".format(num_layers_lst))
     for handler in logger.handlers:
         # 判断处理程序是否是指定的FileHandler

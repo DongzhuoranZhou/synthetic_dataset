@@ -26,6 +26,7 @@ pip install torch-cluster -f https://pytorch-geometric.com/whl/torch-1.13.0+cu11
 pip install torch-spline-conv -f https://pytorch-geometric.com/whl/torch-1.13.0+cu117.html
 pip install torch-geometric
 pip install networkx
+pip install matplotlib
 ``` 
 
 ### 3. Run the code

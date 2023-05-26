@@ -189,10 +189,11 @@ if __name__ == "__main__":
     #
 
     # multiple depth
-    # depth_list =  [4,6,8,10,11,12,13,14,15,16,32]
-    depth_list = [18, 20, 22, 24, 26, 28, 30]
+    depth_list =  [4,6,8,10,11,12,13,14,15,16,32]
+    depth_list = [7,9,]
+    # depth_list = [18, 20, 22, 24, 26, 28, 30]
     for depth in depth_list:
-        embedding_dim = 64
+        embedding_dim = 16
         num_pairs = 1000
         # depth = 4
         width = 1
