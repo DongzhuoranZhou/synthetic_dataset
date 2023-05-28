@@ -81,7 +81,7 @@ def main(args):
     return np.mean(list_train_acc), np.std(list_train_acc), np.mean(list_test_acc), np.std(list_test_acc)
 
 
-if __name__ == "__main__":
+def run_all(args,num_layers_lst,logdir='logs'):
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
@@ -91,46 +91,34 @@ if __name__ == "__main__":
     sh.setFormatter(formatter)
     logger.addHandler(sh)
 
-    #
-    # fh = logging.FileHandler('logs/log.txt')
-    # fh.setFormatter(formatter)
-    # logger.addHandler(fh)
+
 
     logging.basicConfig(level=logging.INFO,
                         )
+    args.logdir = '{}/hdim{}/Model_{}_Norm_{}_Trick_{}'.format(logdir,str(args.num_feats),
+                                                                            args.type_model, str(
+                                                                                args.type_norm),str(args.type_trick))
 
-    # args = BaseOptions().initialize()
-    args = configs.arg_parse()
-
-    # single
-    # main(args)
-    # multi
-    # num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 32]
-    num_layers_lst = [10, 11, 12, 13, 14, 15, 16, 32]
-    # num_layers_lst = [18,20,22,24,26,28,30]
-    # num_layers_lst =  [4, 6, 8, 10, 11, 12, 13, 14, 15, 16,18,20,22,24,26,28,30, 32]
-    # num_layers_lst =  [ 3, 4, 5, 6,7, 8, 10, 11, 12, 13, 14, 15, 16,18,20,22,24,26,28,30,32]
-
+    print("logdir: {}".format(args.logdir))
     num_feature = args.num_feats
     acc_lst = []
     acc_dict = {}
     if not exists(args.logdir):
         os.makedirs(args.logdir)
-    # logfilename = "{}/{}_{}layers_{}_summary.log".format(args.logdir, args.type_model, "_".join(str(e) for e in num_layers_lst), args.dataset)
-    # fh = logging.FileHandler(logfilename)
-    # fh.setFormatter(formatter)
-    # logger.addHandler(fh)
+
     for num_layers in num_layers_lst:
-        dataset_name = "dataset/G_1000_pairs_depth_{}_width_1_hdim_{}_gap_True.pt".format(num_layers, num_feature)
+        dataset_name = "dataset/G_1000_pairs_depth_{}_width_1_hdim_{}_gap_True.pt".format(num_layers,
+                                                                                          num_feature)
         args.num_layers = num_layers
         args.dataset_name = dataset_name
         mean_train_acc, std_train_acc, mean_test_acc, std_test_acc = main(args)
         acc_lst.append((mean_train_acc, std_train_acc, mean_test_acc, std_test_acc))
         acc_dict[num_layers] = (mean_train_acc, std_train_acc, mean_test_acc, std_test_acc)
 
-
     # summary log
-    logfilename = "{}/{}_{}layers_{}_summary.log".format(args.logdir, args.type_model, "_".join(str(e) for e in num_layers_lst), args.dataset)
+    logfilename = "{}/{}_{}layers_{}_summary.log".format(args.logdir, args.type_model,
+                                                         "_".join(str(e) for e in num_layers_lst),
+                                                         args.dataset)
     fh = logging.FileHandler(logfilename)
     fh.setFormatter(formatter)
     logger.addHandler(fh)
@@ -143,11 +131,48 @@ if __name__ == "__main__":
                 num_layer, mean_train_acc, std_train_acc, mean_test_acc, std_test_acc))
     logging.info("acc_lst: {}".format(acc_lst))
     logging.info("acc_dict: {}".format(acc_dict))
-    torch.save((num_layers_lst,acc_dict), "{}/{}_{}layers_{}_summary.pt".format(args.logdir, args.type_model, "_".join(str(e) for e in num_layers_lst), args.dataset))
     logging.info("num_layers_lst: {}".format(num_layers_lst))
+    torch.save(acc_dict, "{}/{}_{}layers_{}_summary.pt".format(args.logdir, args.type_model,
+                                                               "_".join(str(e) for e in num_layers_lst),
+                                                               args.dataset))
     for handler in logger.handlers:
         # 判断处理程序是否是指定的FileHandler
         if isinstance(handler, logging.FileHandler) and handler.baseFilename == logfilename:
             # 移除该处理程序
             logger.removeHandler(handler)
     logger.handlers.clear()
+
+if __name__ == "__main__":
+
+    args = configs.arg_parse()
+
+    # Combination of hyperparameters
+    type_models_list = ['GCN','GAT','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN']
+    type_norm_list = ['pair', 'batch','ground', 'None']
+    type_trick_list = ['Residual', 'None']
+    num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    num_layers_lst = [4, 6]
+    param_combinations = []
+    for model_type in type_models_list:
+        for norm_type in type_norm_list:
+            for trick_type in type_trick_list:
+                params = {
+                    'type_model': model_type,
+                    'type_norm': norm_type,
+                    'type_trick': trick_type
+                }
+                if norm_type != 'None' and model_type not in ['GCN', 'GAT', 'SGC']:
+                    continue
+                # if trick_type != 'None' and norm_type != 'None' and model_type != 'GCN':
+                #     continue
+                if trick_type == 'Residual':
+                    if model_type != 'GCN' or norm_type != 'None':
+                        continue
+
+                param_combinations.append(params)
+    # Run
+    for param_combination in param_combinations:
+        print(param_combination)
+        for key, value in param_combination.items():
+            setattr(args, key, value)
+        run_all(args,num_layers_lst,logdir='logs/test2/easy2plot/reproduce')
