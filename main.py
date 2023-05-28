@@ -53,6 +53,7 @@ def main(args):
         torch.cuda.empty_cache()
         trnr = trainer(args, seed)
         train_loss, valid_acc, test_acc, train_acc = trnr.train_and_test()
+
         list_test_acc.append(test_acc)
         list_valid_acc.append(valid_acc)
         list_train_loss.append(train_loss)
@@ -104,10 +105,11 @@ if __name__ == "__main__":
     # single
     # main(args)
     # multi
-    num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 32]
+    # num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 32]
+    num_layers_lst = [10, 11, 12, 13, 14, 15, 16, 32]
     # num_layers_lst = [18,20,22,24,26,28,30]
-    num_layers_lst =  [4, 6, 8, 10, 11, 12, 13, 14, 15, 16,18,20,22,24,26,28,30, 32]
-    num_layers_lst =  [ 3, 4, 5, 6,7, 8, 10, 11, 12, 13, 14, 15, 16,18,20,22,24,26,28,30,32]
+    # num_layers_lst =  [4, 6, 8, 10, 11, 12, 13, 14, 15, 16,18,20,22,24,26,28,30, 32]
+    # num_layers_lst =  [ 3, 4, 5, 6,7, 8, 10, 11, 12, 13, 14, 15, 16,18,20,22,24,26,28,30,32]
 
     num_feature = args.num_feats
     acc_lst = []

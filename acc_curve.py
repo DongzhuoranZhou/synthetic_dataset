@@ -209,7 +209,8 @@ if __name__ == '__main__':
     (GAT_BN_separate_num_layer, GAT_BN_separate_acc_dict) = torch.load('logs/test21_reproduce_GATBN_quich_changing_depth/GAT_3_4_5_6_7_8_10_11_12_13_14_15_16_18_20_22_24_26_28_30_32layers_syn2_summary.pt')
     GAT_BN_separate_TrainTestDataContainer = plot_data_preprocess(GAT_BN_separate_acc_dict, GAT_BN_separate_num_layer, label='GATBN_separate')
 
-
+    (GCN_res_num_layer,GCN_res_acc_dict) = torch.load('logs/test22_GCN_res/GCN_3_4_5_6_7_8_10_11_12_13_14_15_16_18_20_22_24_26_28_30_32layers_syn2_summary.pt')
+    GCN_res_TrainTestDataContainer = plot_data_preprocess(GCN_res_acc_dict, GCN_res_num_layer, label='GCN_res')
     # single split GAT with BN 16 from cluster
     GAT_BN_num_layer = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18,20,22,24,26,28,30, 32]
     GAT_BN_acc_dict = {4: (1.0, 0.0, 1.0, 0.0), 6: (1.0, 0.0, 1.0, 0.0), 8: (1.0, 0.0, 1.0, 0.0), 10: (0.9623333333333333, 0.07533333333333334, 0.9629999999999999, 0.07400000000000002), 11: (0.9995, 0.0009999999999999788, 1.0, 0.0), 12: (0.9515, 0.054719994314489644, 0.9465, 0.06042764268114387), 13: (0.9345000000000001, 0.12892676646496304, 0.9324999999999999, 0.13002884295416922), 14: (0.9209999999999999, 0.054286789880739435, 0.9205, 0.05023445033042566), 15: (0.8706666666666667, 0.1366904450858866, 0.8755000000000001, 0.13274411474713296), 16: (0.8788333333333332, 0.08881097279553292, 0.8905, 0.09463614531456785), 18: (0.5, 0.0, 0.5, 0.0), 20: (0.5, 0.0, 0.5, 0.0), 22: (0.5, 0.0, 0.5, 0.0), 24: (0.5, 0.0, 0.5, 0.0), 26: (0.5, 0.0, 0.5, 0.0), 28: (0.5, 0.0, 0.5, 0.0), 30: (0.5, 0.0, 0.5, 0.0),32: (0.5, 0.0, 0.5, 0.0)}
@@ -276,9 +277,14 @@ if __name__ == '__main__':
     JKNet_TrainTestDataContainer = plot_data_preprocess(JKNet_acc_dict, JKNet_num_layer, label='JKNet')
 
     # single split SGC hdim 16 from cluster
-    SGC_num_layer = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 32]
-    SGC_acc_dict = {4: (1.0, 0.0, 1.0, 0.0), 6: (1.0, 0.0, 1.0, 0.0), 8: (1.0, 0.0, 1.0, 0.0), 10: (0.9955, 0.00208166599946614, 0.991, 0.005147815070493501), 11: (0.9629999999999999, 0.001632993161855451, 0.9650000000000001, 0.010954451150103333), 12: (0.8768333333333335, 0.004636809247747852, 0.8695, 0.01326649916142156), 13: (0.7541666666666667, 0.005725188012439225, 0.7619999999999999, 0.015362291495737196), 14: (0.6723333333333332, 0.006980130530457292, 0.666, 0.020037464909513858), 15: (0.601, 0.00608732745591657, 0.5894999999999999, 0.014089002803605396), 16: (0.5316666666666666, 0.02793345266482066, 0.5225, 0.03037268509697487), 32: (0.5115000000000001, 0.010946841249115337, 0.47250000000000003, 0.026598872156540776)}
-    SGC_TrainTestDataContainer = plot_data_preprocess(SGC_acc_dict, SGC_num_layer, label='SGC')
+    # SGC_num_layer = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 32]
+    # SGC_acc_dict = {4: (1.0, 0.0, 1.0, 0.0), 6: (1.0, 0.0, 1.0, 0.0), 8: (1.0, 0.0, 1.0, 0.0), 10: (0.9955, 0.00208166599946614, 0.991, 0.005147815070493501), 11: (0.9629999999999999, 0.001632993161855451, 0.9650000000000001, 0.010954451150103333), 12: (0.8768333333333335, 0.004636809247747852, 0.8695, 0.01326649916142156), 13: (0.7541666666666667, 0.005725188012439225, 0.7619999999999999, 0.015362291495737196), 14: (0.6723333333333332, 0.006980130530457292, 0.666, 0.020037464909513858), 15: (0.601, 0.00608732745591657, 0.5894999999999999, 0.014089002803605396), 16: (0.5316666666666666, 0.02793345266482066, 0.5225, 0.03037268509697487), 32: (0.5115000000000001, 0.010946841249115337, 0.47250000000000003, 0.026598872156540776)}
+    # SGC_TrainTestDataContainer = plot_data_preprocess(SGC_acc_dict, SGC_num_layer, label='SGC')
+
+    # SGC_num_layer = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 32]
+    # SGC_acc_dict = {4: (1.0, 0.0, 1.0, 0.0), 6: (1.0, 0.0, 1.0, 0.0), 8: (1.0, 0.0, 1.0, 0.0), 10: (0.9955, 0.00208166599946614, 0.991, 0.005147815070493501), 11: (0.9629999999999999, 0.001632993161855451, 0.9650000000000001, 0.010954451150103333), 12: (0.8768333333333335, 0.004636809247747852, 0.8695, 0.01326649916142156), 13: (0.7541666666666667, 0.005725188012439225, 0.7619999999999999, 0.015362291495737196), 14: (0.6723333333333332, 0.006980130530457292, 0.666, 0.020037464909513858), 15: (0.601, 0.00608732745591657, 0.5894999999999999, 0.014089002803605396), 16: (0.5316666666666666, 0.02793345266482066, 0.5225, 0.03037268509697487), 32: (0.5115000000000001, 0.010946841249115337, 0.47250000000000003, 0.026598872156540776)}
+    (SGC_bn_num_layer, SGC_bn_acc_dict) = torch.load('logs/test26_SGC_batch/SGC_4_6_8_10_11_12_13_14_15_16_32layers_syn2_summary.pt')
+    SGC_bn_TrainTestDataContainer = plot_data_preprocess(SGC_bn_acc_dict, SGC_bn_num_layer, label='SGC_bn')
 
 
     # single split SGC with BN hdim 16 from cluster
@@ -315,16 +321,24 @@ if __name__ == '__main__':
     SGC_BN_n_acc_dict = {4: (1.0, 0.0, 1.0, 0.0), 6: (1.0, 0.0, 1.0, 0.0), 8: (1.0, 0.0, 1.0, 0.0), 10: (0.9968333333333333, 0.0009718253158075383, 0.993, 0.00291547594742263), 11: (0.9666666666666666, 0.002635231383473647, 0.9685, 0.004636809247747873), 12: (0.8861666666666667, 0.005666666666666671, 0.89, 0.029664793948382638), 13: (0.7563333333333333, 0.005906681715556456, 0.756, 0.014195069566578379), 14: (0.6541666666666666, 0.009354143466934845, 0.6505, 0.027129319932501065), 15: (0.5974999999999999, 0.008232726023485659, 0.5734999999999999, 0.016852299546352693), 16: (0.5618333333333333, 0.014273129377337768, 0.542, 0.01777638883463116), 32: (0.5189999999999999, 0.012011568497818191, 0.4665, 0.016015617378046958)}
     SGC_BN_n_TrainTestDataContainer = plot_data_preprocess(SGC_BN_n_acc_dict, SGC_BN_n_layer_num_layer, label='SGC_BN_n')
 
+
+    # single split GCN with res hdim 16 from cluster
+    # GCN_res_num_layer = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 32]
+    # GCN_res_acc_dict =
+    (GCN_res_num_layer, GCN_res_acc_dict) = torch.load('logs/test22_GCN_res/GCN_3_4_5_6_7_8_10_11_12_13_14_15_16_18_20_22_24_26_28_30_32layers_syn2_summary.pt')
+    GCN_res_TrainTestDataContainer = plot_data_preprocess(GCN_res_acc_dict, GCN_res_num_layer, label='GCN_res')
     list_container = [GCN_TrainTestDataContainer, GCN_PN_TrainTestDataContainer,GCN_BN_TrainTestDataContainer,]
     list_container = [GCN_TrainTestDataContainer, GAT_BN_TrainTestDataContainer, GAT_PN_TrainTestDataContainer]
-    list_container = [GCN_TrainTestDataContainer, DAGNN_TrainTestDataContainer,APPNP_TrainTestDataContainer,GPRGNN_TrainTestDataContainer,JKNet_TrainTestDataContainer,SGC_TrainTestDataContainer,GCNII_TrainTestDataContainer]
+    # list_container = [GCN_TrainTestDataContainer, DAGNN_TrainTestDataContainer,APPNP_TrainTestDataContainer,GPRGNN_TrainTestDataContainer,JKNet_TrainTestDataContainer,SGC_TrainTestDataContainer,GCNII_TrainTestDataContainer]
     # list_container = [SGC_TrainTestDataContainer,SGC_BN_TrainTestDataContainer, SGC_PN_by_DGN_TrainTestDataContainer] # TODO since current PN,BN is only for the last layer
     list_container = [GAT_PN_TrainTestDataContainer,GAT_PN_hdim8_TrainTestDataContainer,GAT_PN_hdim64_TrainTestDataContainer]
     list_container = [GCN_fixed_TrainTestDataContainer]
     list_container = [GAT_TrainTestDataContainer,GAT_BN_TrainTestDataContainer,GAT_PN_TrainTestDataContainer]
-    list_container = [GAT_BN_separate_TrainTestDataContainer,GAT_BN_TrainTestDataContainer]
-    # acc_type_list = ["train","test"]
-    acc_type_list = ['train']
+    list_container = [GCN_TrainTestDataContainer,GCN_res_TrainTestDataContainer,JKNet_TrainTestDataContainer]
+    list_container = [SGC_BN_TrainTestDataContainer,SGC_bn_TrainTestDataContainer]
+    acc_type_list = ["train","test"]
+    # acc_type_list = ['train']
+    acc_type_list = ['test']
     title = "{} accuracy curve with covariance with 16 dim 1000 pairs".format(acc_type_list)
     plot_train_test_accuracy_curve_with_covariance(list_container, save_path="acc_curve1.png",acc_type_list=acc_type_list,title=title)
 

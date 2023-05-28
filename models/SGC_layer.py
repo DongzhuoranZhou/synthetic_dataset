@@ -9,7 +9,18 @@ from torch_geometric.nn.conv.gcn_conv import gcn_norm
 import torch
 import torch.nn.functional as F
 from torch import nn
+from models.common_blocks import batch_norm
 
+class pair_norm(torch.nn.Module):
+    def __init__(self):
+        super(pair_norm, self).__init__()
+
+    def forward(self, x):
+        col_mean = x.mean(dim=0)
+        x = x - col_mean
+        rownorm_mean = (1e-6 + x.pow(2).sum(dim=1).mean()).sqrt()
+        x = x / rownorm_mean
+        return x
 
 class SGConv(MessagePassing):
     r"""The simple graph convolutional operator from the `"Simplifying Graph
@@ -48,7 +59,7 @@ class SGConv(MessagePassing):
 
     def __init__(self, in_channels: int, out_channels: int, K: int = 1,
                  cached: bool = False, add_self_loops: bool = True,
-                 bias: bool = True, bn: bool = True, dropout: float = 0.,
+                 bias: bool = True, bn: bool = True, pn: bool = True, gn: bool = True, dropout: float = 0.,
                  lin_first: bool = False, **kwargs):
         kwargs.setdefault('aggr', 'add')
         super(SGConv, self).__init__(**kwargs)
@@ -64,6 +75,8 @@ class SGConv(MessagePassing):
         self.lin = Linear(in_channels, out_channels, bias=bias)
 
         self.bn = bn
+        self.pn = pn
+        self.gn = gn
         self.layers_bn = nn.ModuleList([])
         self.dropout = dropout
         self.lin_first = lin_first
@@ -71,15 +84,22 @@ class SGConv(MessagePassing):
             # self.bn = torch.nn.BatchNorm1d(self.in_channels)
             for k in range(self.K):
                 self.layers_bn.append(torch.nn.BatchNorm1d(self.in_channels))
+            # self.bn1 = torch.nn.BatchNorm1d(self.in_channels)
+            # self.bn2 = torch.nn.BatchNorm1d(self.in_channels)
+        if self.pn:
+            for k in range(self.K):
+                self.layers_bn.append(pair_norm())
+        if self.gn:
+            for k in range(self.K):
+                self.layers_bn.append(batch_norm(self.dim_hidden, self.type_norm, self.num_groups, self.skip_weight))
         if self.lin_first:
             self.cached = False
-
+        self.cached = False
         self.reset_parameters()
 
     def reset_parameters(self):
         self.lin.reset_parameters()
         self._cached_x = None
-
 
     def forward(self, x: Tensor, edge_index: Adj,
                 edge_weight: OptTensor = None) -> Tensor:
@@ -89,6 +109,7 @@ class SGConv(MessagePassing):
 
         """"""
         cache = self._cached_x
+        # print("cache: ", cache)
         if cache is None:
             if isinstance(edge_index, Tensor):
                 edge_index, edge_weight = gcn_norm(  # yapf: disable
@@ -106,7 +127,17 @@ class SGConv(MessagePassing):
                 if self.bn:
                     # x = self.bn(x)
                     x = self.layers_bn[k](x)
-                    x = x.data
+                    # x = x.detach()
+                    # if k == 0:
+                    #     x = self.bn1(x)
+                    # elif k == 1:
+                    #     x = self.bn2(x)
+                # x = self.bn1(x)
+                elif self.pn:
+                    x = self.layers_bn[k](x)
+                elif self.gn:
+                    x = self.layers_bn[k](x)
+
             if self.cached:
                 self._cached_x = x
         else:
@@ -121,7 +152,6 @@ class SGConv(MessagePassing):
             x = self.lin(x)
 
         return x
-
 
     def message(self, x_j: Tensor, edge_weight: Tensor) -> Tensor:
         return edge_weight.view(-1, 1) * x_j
