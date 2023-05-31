@@ -150,8 +150,13 @@ if __name__ == "__main__":
     type_models_list = ['GCN','GAT','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN']
     type_norm_list = ['pair', 'batch','ground', 'None']
     type_trick_list = ['Residual', 'None']
+    # type_models_list = ['GCN']
+    type_norm_list = ['SGC']
+    type_norm_list = ['None']
+    type_trick_list = ['None']
     num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
-    num_layers_lst = [4, 6]
+    # num_layers_lst = [4, 6]
+    # num_layers_lst = [4, 6, 8, 10, 12, 14, 16, 18, 20]
     param_combinations = []
     for model_type in type_models_list:
         for norm_type in type_norm_list:
@@ -175,4 +180,4 @@ if __name__ == "__main__":
         print(param_combination)
         for key, value in param_combination.items():
             setattr(args, key, value)
-        run_all(args,num_layers_lst,logdir='logs/test2/easy2plot/reproduce')
+        run_all(args,num_layers_lst,logdir=args.logdir)

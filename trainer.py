@@ -23,14 +23,15 @@ class trainer(object):
         self.device = torch.device(f'cuda:{args.cuda_num}' if args.cuda else 'cpu')
         self.which_run = which_run
 
-        self.data = load_data(self.dataset, self.type_split,self.dataset_name)
+        self.data = load_data(dataset=self.dataset, type_split=self.type_split,dataset_name=self.dataset_name,precisition=self.precision)
         self.loss_fn = torch.nn.functional.nll_loss
         self.data.to(self.device)
 
         # if args.compare_model:  # only compare model
         Model = getattr(importlib.import_module("models"), self.type_model)
         self.model = Model(args)
-        # self.model.double()
+        if self.precision == 'float64':
+            self.model.double()
         # else:  # compare tricks combinations
         #     self.model = TricksComb(args)
         self.model.to(self.device)

@@ -11,7 +11,7 @@ def reset_dataset_dependent_parameters(args):
         args.dropout = 0.5  # 0.5
         args.lr = 0.005  # 0.005
         args.weight_decay = 5e-4
-        args.epochs = 1
+        args.epochs = 1000
         args.patience = 200  # 100
         args.dim_hidden = 16
         args.activation = 'relu'
@@ -201,6 +201,9 @@ def arg_parse():
     parser.add_argument('--has_residual_MLP', type=bool, default=False)
 
     # Hyperparameters for random dropout
+    parser.add_argument('--precision', type=str, default="float32")
+
+
     parser.add_argument('--graph_dropout', type=float, default=0.2,
                         help="graph dropout rate (for dropout tricks)")  # 5e-4
     parser.add_argument('--layerwise_dropout', action='store_true', default=False)

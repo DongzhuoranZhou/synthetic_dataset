@@ -10,7 +10,7 @@ from torch_geometric.utils import remove_self_loops, add_self_loops, to_undirect
 from torch_geometric.utils import from_networkx
 
 
-def load_data(dataset, type_split="pair",dataset_name=None):
+def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32",direction="directed"):
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', dataset)
 
     if dataset in ["Cora", "Citeseer", "Pubmed"]:
@@ -20,9 +20,18 @@ def load_data(dataset, type_split="pair",dataset_name=None):
         G = torch.load(dataset_name) # "dataset/G_1000_pairs_depth_32_width_1_hdim_16_gap_True.pt"
         G_index = nx.get_node_attributes(G, "graph_index")
 
+        # TODO explicit undirected
+        if direction == "undirected":
+            G = G.to_undirected()
+
+        # G = G.to_undirected()
         data = from_networkx(G)
         # data.x = data.x.to(torch.float64)
-        data.x = data.x.to(torch.float32)
+        if precisition == "float32":
+            data.x = data.x.to(torch.float32)
+        elif precisition == "float64":
+            data.x = data.x.to(torch.float64)
+        # data.x = data.x.to(torch.float32)
         data.num_classes = int(max(data.y) + 1)
         data.G_index = G_index
         data = change_split(data, dataset, type_split=type_split)
