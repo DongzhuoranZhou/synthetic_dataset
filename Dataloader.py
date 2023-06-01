@@ -24,6 +24,7 @@ def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32"
         if direction == "undirected":
             G = G.to_undirected()
 
+
         # G = G.to_undirected()
         data = from_networkx(G)
         data.x = data.x.to(torch.float64)

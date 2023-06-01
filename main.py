@@ -148,7 +148,7 @@ if __name__ == "__main__":
     args = configs.arg_parse()
 
     # Combination of hyperparameters
-    type_models_list = ['GCN','GAT','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN']
+    type_models_list = ['GCN','GAT','simpleGCN','GCNII','APPNP','DAGNN','JKNet','GPRGNN']
     type_norm_list = ['pair', 'batch','ground', 'None']
     type_trick_list = ['Residual', 'None']
     # type_models_list = ['simpleGCN']
@@ -167,7 +167,7 @@ if __name__ == "__main__":
                     'type_norm': norm_type,
                     'type_trick': trick_type
                 }
-                if norm_type != 'None' and model_type not in ['GCN', 'GAT', 'SGC']:
+                if norm_type != 'None' and model_type not in ['GCN', 'GAT', 'simpleGCN']:
                     continue
                 # if trick_type != 'None' and norm_type != 'None' and model_type != 'GCN':
                 #     continue
@@ -181,4 +181,4 @@ if __name__ == "__main__":
         print(param_combination)
         for key, value in param_combination.items():
             setattr(args, key, value)
-        run_all(args,num_layers_lst,logdir_root='logs/test_dir_order2')
+        run_all(args,num_layers_lst,logdir_root=args.logdir_root)
