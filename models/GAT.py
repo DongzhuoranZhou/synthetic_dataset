@@ -86,13 +86,14 @@ class GAT(torch.nn.Module):
 
     def forward(self, x, edge_index):
         if self.with_ACM:
-
+            x_list = []
             for i in range(self.num_layers - 1):
                 x = F.dropout(x, p=self.dropout, training=self.training)
                 x = self.layers_GCN[i](x, edge_index,w_for_norm=self.w_for_norm)
                 if self.type_norm in ['batch', 'pair', 'group']:
                     x = self.layers_bn[i](x)
                 x = F.tanh(x)
+                x_list.append(x)
             x = self.layers_GCN[-1](x, edge_index,w_for_norm=self.w_for_norm)
             x = self.lin(x)
             return x

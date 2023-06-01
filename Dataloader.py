@@ -31,6 +31,8 @@ def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32"
             data.x = data.x.to(torch.float32)
         elif precisition == "float64":
             data.x = data.x.to(torch.float64)
+        elif precisition == "float16":
+            data.x = data.x.to(torch.float16)
         # data.x = data.x.to(torch.float32)
         data.num_classes = int(max(data.y) + 1)
         data.G_index = G_index

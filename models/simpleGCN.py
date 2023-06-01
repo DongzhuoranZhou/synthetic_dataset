@@ -6,7 +6,7 @@ import torch
 from torch_scatter import scatter_add
 from torch_geometric.utils import scatter
 from torch.nn import Parameter
-
+import numpy as np
 class simpleGCN(nn.Module):
     def __init__(self, args):
         super(simpleGCN, self).__init__()
@@ -29,6 +29,12 @@ class simpleGCN(nn.Module):
         self.layers_bn = nn.ModuleList([])
         self.weight = Parameter(torch.Tensor(self.num_feats, self.num_classes))
         glorot(self.weight)
+
+
+        if self.with_ACM:
+            self.w_for_norm = nn.Parameter(torch.FloatTensor(1, self.num_classes))
+            stdv_for_norm = 1. / np.sqrt(self.w_for_norm.size(1))
+            self.w_for_norm.data.uniform_(-stdv_for_norm, stdv_for_norm)
 
         for i in range(self.num_layers):
             # if self.type_norm in ['None', 'batch', 'pair']:
@@ -58,9 +64,13 @@ class simpleGCN(nn.Module):
         x = torch.mm(x, self.weight)
 
         for i in range(self.num_layers):
+            if self.with_ACM:
+                self.w_for_norm.data = self.w_for_norm.abs()
             x_j = x.index_select(0, edge_index[0])
             # x_conv = scatter_(self.aggr, norm * x_j, edge_index[1], 0, x.size(0))
             x_conv = scatter(norm * x_j, edge_index[1], 0, x.size(0), reduce=self.aggr)
+            if self.with_ACM:
+                x_conv = RiemannAgg(x_conv, self.w_for_norm)
             x = self.layers_bn[i](x_conv)
 
         return x
@@ -69,4 +79,13 @@ class simpleGCN(nn.Module):
 
 
 
+def RiemannAgg(x, w):
 
+    squar_x = torch.square(x)
+    squar_x_w = torch.mul(squar_x, w)
+    sum_squar_x_w = torch.sum(squar_x_w, dim=1)
+    sqrt_x_w = torch.sqrt(sum_squar_x_w + 1e-2)
+    sqrt_x_w = torch.unsqueeze(sqrt_x_w, dim=1)
+    x = torch.div(x, sqrt_x_w + 1e-2 ) # + 1
+
+    return x

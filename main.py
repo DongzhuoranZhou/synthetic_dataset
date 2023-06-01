@@ -107,7 +107,7 @@ def run_all(args,num_layers_lst,logdir='logs'):
         os.makedirs(args.logdir)
 
     for num_layers in num_layers_lst:
-        dataset_name = "dataset/G_1000_pairs_depth_{}_width_1_hdim_{}_gap_True.pt".format(num_layers,
+        dataset_name = "dataset/G_1000_pairs_depth_{}_width_1_hdim_{}_gap_True.pt".format(5,
                                                                                           num_feature)
         args.num_layers = num_layers
         args.dataset_name = dataset_name
@@ -150,8 +150,8 @@ if __name__ == "__main__":
     type_models_list = ['GCN','GAT','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN']
     type_norm_list = ['pair', 'batch','ground', 'None']
     type_trick_list = ['Residual', 'None']
-    # type_models_list = ['GCN']
-    type_norm_list = ['SGC']
+    type_models_list = ['simpleGCN']
+    # type_norm_list = ['GPRGNN']
     type_norm_list = ['None']
     type_trick_list = ['None']
     num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]

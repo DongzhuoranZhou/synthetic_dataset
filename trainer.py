@@ -32,6 +32,10 @@ class trainer(object):
         self.model = Model(args)
         if self.precision == 'float64':
             self.model.double()
+        elif self.precision == 'float32':
+            self.model.float()
+        elif self.precision == 'float16':
+            self.model.half()
         # else:  # compare tricks combinations
         #     self.model = TricksComb(args)
         self.model.to(self.device)

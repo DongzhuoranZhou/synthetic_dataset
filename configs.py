@@ -201,7 +201,7 @@ def arg_parse():
     parser.add_argument('--has_residual_MLP', type=bool, default=False)
 
     # Hyperparameters for random dropout
-    parser.add_argument('--precision', type=str, default="float32")
+    parser.add_argument('--precision', type=str, default="float32",choices=['float32', 'float16', 'float64'])
 
 
     parser.add_argument('--graph_dropout', type=float, default=0.2,
@@ -210,7 +210,7 @@ def arg_parse():
     # parser.add_argument("--with_ACM", type=bool, default=False,
     #                     help="with ACM algorithm or not")
     parser.add_argument('--with_ACM', action='store_true', default=False)
-    parser.add_argument('--log_file', type=str, default="'logs/log.txt'")
+    # parser.add_argument('--log_file', type=str, default="'logs/log.txt'")
     parser.add_argument('--gcn_norm_type', type=str, default='sym', choices=['sym', 'rw'])
 
     args = parser.parse_args()

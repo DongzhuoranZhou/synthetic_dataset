@@ -243,8 +243,10 @@ if __name__ == '__main__':
     JKNet_hdim16_TrainTestDataContainer = plot_data_preprocess(JKNet_hdim16_acc_dict, num_layers_lst,
                                                                 label='JKNet_hdim{}'.format(hdim))
 
-
-
+    GPRGNN_float64_hdim16_acc_dict = torch.load(
+        'logs/precision/hdim16/Model_GPRGNN_Norm_None_Trick_None/GPRGNN_4_6_8_10_11_12_13_14_15_16_18_20_22_24_26_28_30_32layers_syn2_summary.pt'.format(root,num_layers))
+    GPRGNN_float64_hdim16_TrainTestDataContainer = plot_data_preprocess(GPRGNN_float64_hdim16_acc_dict, num_layers_lst,
+                                                                label='GPRGNN_float64_hdim{}'.format(hdim))
 
 
     list_container = [GCN_hdim16_TrainTestDataContainer, GAT_hdim16_TrainTestDataContainer,
@@ -257,6 +259,7 @@ if __name__ == '__main__':
     #                   SGC_hdim16_TrainTestDataContainer]
     # list_container = [GPRGNN_hdim16_TrainTestDataContainer]
     # list_container = [JKNet_hdim16_TrainTestDataContainer]
+    list_container = [GPRGNN_float64_hdim16_acc_dict, GPRGNN_hdim16_TrainTestDataContainer]
     # acc_type_list = ["train", "test"]
     acc_type_list = ['train']
     # acc_type_list = ['test']
