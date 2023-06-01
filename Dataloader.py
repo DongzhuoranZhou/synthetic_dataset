@@ -26,7 +26,7 @@ def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32"
 
         # G = G.to_undirected()
         data = from_networkx(G)
-        # data.x = data.x.to(torch.float64)
+        data.x = data.x.to(torch.float64)
         if precisition == "float32":
             data.x = data.x.to(torch.float32)
         elif precisition == "float64":

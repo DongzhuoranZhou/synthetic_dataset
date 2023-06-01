@@ -81,7 +81,7 @@ def main(args):
     return np.mean(list_train_acc), np.std(list_train_acc), np.mean(list_test_acc), np.std(list_test_acc)
 
 
-def run_all(args,num_layers_lst,logdir='logs'):
+def run_all(args,num_layers_lst,logdir_root='logs'):
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
@@ -95,7 +95,7 @@ def run_all(args,num_layers_lst,logdir='logs'):
 
     logging.basicConfig(level=logging.INFO,
                         )
-    args.logdir = '{}/hdim{}/Model_{}_Norm_{}_Trick_{}'.format(logdir,str(args.num_feats),
+    args.logdir = '{}/hdim{}/Model_{}_Norm_{}_Trick_{}'.format(logdir_root,str(args.num_feats),
                                                                             args.type_model, str(
                                                                                 args.type_norm),str(args.type_trick))
 
@@ -151,10 +151,10 @@ if __name__ == "__main__":
     type_models_list = ['GCN','GAT','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN']
     type_norm_list = ['pair', 'batch','ground', 'None']
     type_trick_list = ['Residual', 'None']
-    type_models_list = ['simpleGCN']
+    # type_models_list = ['simpleGCN']
     # type_norm_list = ['GPRGNN']
-    type_norm_list = ['None']
-    type_trick_list = ['None']
+    # type_norm_list = ['None']
+    # type_trick_list = ['None']
     num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     # num_layers_lst = [4, 6]
     # num_layers_lst = [4, 6, 8, 10, 12, 14, 16, 18, 20]
@@ -181,4 +181,4 @@ if __name__ == "__main__":
         print(param_combination)
         for key, value in param_combination.items():
             setattr(args, key, value)
-        run_all(args,num_layers_lst,logdir=args.logdir)
+        run_all(args,num_layers_lst,logdir_root='logs/test_dir_order2')
