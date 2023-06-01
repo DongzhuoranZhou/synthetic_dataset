@@ -101,13 +101,14 @@ def run_all(args,num_layers_lst,logdir='logs'):
 
     print("logdir: {}".format(args.logdir))
     num_feature = args.num_feats
+    num_pairs = args.num_pairs
     acc_lst = []
     acc_dict = {}
     if not exists(args.logdir):
         os.makedirs(args.logdir)
 
     for num_layers in num_layers_lst:
-        dataset_name = "dataset/G_1000_pairs_depth_{}_width_1_hdim_{}_gap_True.pt".format(5,
+        dataset_name = "dataset/G_{}_pairs_depth_{}_width_1_hdim_{}_gap_True.pt".format(num_pairs,num_layers,
                                                                                           num_feature)
         args.num_layers = num_layers
         args.dataset_name = dataset_name

@@ -165,6 +165,8 @@ def arg_parse():
     parser.add_argument('--num_layers', type=int, default=64)
     parser.add_argument("--epochs", type=int, default=1000,
                         help="number of training the one shot model")
+    parser.add_argument("--num_pairs", type=int, default=1000,
+                        help="number of training the one shot model")
     # parser.add_argument('--patience', type=int, default=100,
     #                     help="patience step for early stopping")  # 5e-4
     parser.add_argument("--multi_label", type=bool, default=False,
