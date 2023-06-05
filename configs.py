@@ -121,8 +121,8 @@ def arg_parse():
                         help="dropout rate in EdgeDrop")  # 5e-4
 
     parser.add_argument('--node_norm_type', type=str, default="n", choices=['n', 'v', 'm', 'srv', 'pr'])
-    parser.add_argument('--skip_weight', type=float, default=None)
-    parser.add_argument('--num_groups', type=int, default=None)
+    parser.add_argument('--skip_weight', type=float, default=0.005)
+    parser.add_argument('--num_groups', type=int, default=1)
     parser.add_argument('--has_residual_MLP', type=bool, default=False)
 
     # Hyperparameters for random dropout

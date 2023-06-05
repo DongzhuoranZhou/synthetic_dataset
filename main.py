@@ -149,8 +149,11 @@ if __name__ == "__main__":
 
     # Combination of hyperparameters
     type_models_list = ['GCN','GAT','simpleGCN','GCNII','APPNP','DAGNN','JKNet','GPRGNN']
-    type_norm_list = ['pair', 'batch','ground', 'None']
+    type_models_list = ['GCN']
+    type_norm_list = ['pair', 'batch','group', 'None']
+    type_norm_list = ['group', 'None']
     type_trick_list = ['Residual', 'None']
+    type_trick_list = ['None']
     # type_models_list = ['simpleGCN']
     # type_norm_list = ['GPRGNN']
     # type_norm_list = ['None']

@@ -67,6 +67,9 @@ def perturb(graph_list, p):
     return perturbed_graph_list
 
 
+
+def gen_syn3():
+    pass
 def gen_syn1(height=8, feature_generator=None, max_width=2, max_nodes=20, embedding_dim=16, high_gap=True):
     """ generate pairs of trees with different p.
 
