@@ -95,7 +95,7 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
 
     logging.basicConfig(level=logging.INFO,
                         )
-    args.logdir = '{}/hdim{}/Model_{}_Norm_{}_Trick_{}'.format(logdir_root,str(args.num_feats),
+    args.logdir = '{}/dataset_{}/hdim{}/Model_{}_Norm_{}_Trick_{}'.format(logdir_root,args.dataset,str(args.num_feats),
                                                                             args.type_model, str(
                                                                                 args.type_norm),str(args.type_trick))
 
@@ -108,7 +108,7 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
         os.makedirs(args.logdir)
 
     for num_layers in num_layers_lst:
-        dataset_name = "dataset/G_{}_pairs_depth_{}_width_1_hdim_{}_gap_True.pt".format(num_pairs,num_layers,
+        dataset_name = "dataset/{}/G_{}_pairs_depth_{}_width_1_hdim_{}_gap_True.pt".format(args.dataset,num_pairs,num_layers,
                                                                                           num_feature)
         args.num_layers = num_layers
         args.dataset_name = dataset_name
@@ -149,16 +149,17 @@ if __name__ == "__main__":
 
     # Combination of hyperparameters
     type_models_list = ['GCN','GAT','simpleGCN','GCNII','APPNP','DAGNN','JKNet','GPRGNN']
-    type_models_list = ['GCN']
+    # type_models_list = ['GCN']
     type_norm_list = ['pair', 'batch','group', 'None']
-    type_norm_list = ['group', 'None']
+    # type_norm_list = ['group', 'None']
     type_trick_list = ['Residual', 'None']
-    type_trick_list = ['None']
+    # type_trick_list = ['None']
     # type_models_list = ['simpleGCN']
     # type_norm_list = ['GPRGNN']
     # type_norm_list = ['None']
     # type_trick_list = ['None']
     num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    num_layers_lst = [4,6]
     # num_layers_lst = [4, 6]
     # num_layers_lst = [4, 6, 8, 10, 12, 14, 16, 18, 20]
     param_combinations = []

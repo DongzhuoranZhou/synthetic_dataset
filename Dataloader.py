@@ -16,7 +16,7 @@ def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32"
     if dataset in ["Cora", "Citeseer", "Pubmed"]:
         data = Planetoid(path, dataset, split='public', transform=T.NormalizeFeatures())[0]
 
-    elif dataset in ["syn1", "syn2"]:
+    elif dataset in ["syn1", "syn2","syn3", "syn4"]:
         G = torch.load(dataset_name) # "dataset/G_1000_pairs_depth_32_width_1_hdim_16_gap_True.pt"
         G_index = nx.get_node_attributes(G, "graph_index")
 
@@ -55,7 +55,7 @@ def change_split(data, dataset, type_split):
         data = random_coauthor_amazon_splits(data)
     elif dataset in ["AmazonComputers", "AmazonPhoto"]:
         data = random_coauthor_amazon_splits(data)
-    elif dataset in ["syn1", "syn2"]:
+    elif dataset in ["syn1", "syn2","syn3", "syn4"]:
         data = random_coauthor_amazon_splits(data, type_split=type_split)
     # elif dataset in ["TEXAS", "WISCONSIN", "CORNELL"]:
     #     data = manual_split_WebKB_Actor(data, which_split)

@@ -16,6 +16,17 @@ def reset_dataset_dependent_parameters(args):
         args.dim_hidden = 16
         args.activation = 'relu'
         # args.num_layers = 2
+    if args.dataset == 'syn4':
+        args.num_feats = 16
+        args.num_classes = 2
+        args.dropout = 0.5  # 0.5
+        args.lr = 0.005  # 0.005
+        args.weight_decay = 5e-4
+        args.epochs = 1
+        args.patience = 200  # 100
+        args.dim_hidden = 16
+        args.activation = 'relu'
+        # args.num_layers = 2
     if args.dataset == 'Cora':
         args.num_feats = 1433
         args.num_classes = 7
@@ -59,8 +70,8 @@ def arg_parse():
                         help="The input dataset.",
                         choices=['Cora', 'Citeseer', 'Pubmed', 'ogbn-arxiv',
                                  'CoauthorCS', 'CoauthorPhysics', 'AmazonComputers', 'AmazonPhoto',
-                                 'TEXAS', 'WISCONSIN', 'ACTOR', 'CORNELL',"syn1","syn2"])
-    parser.add_argument('--direction', type=str, default="directed",help='directed or undirected graph',
+                                 'TEXAS', 'WISCONSIN', 'ACTOR', 'CORNELL',"syn1","syn2","syn3","syn4"])
+    parser.add_argument('--direction', type=str, default="undirected",help='directed or undirected graph',
                         choices=['directed', 'undirected'])
     parser.add_argument("--type_split", type=str, default="Cora", required=False,
                         help="The type of dataset split.",
