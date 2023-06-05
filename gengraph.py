@@ -6,6 +6,8 @@ import numpy as np
 import networkx as nx
 import copy
 import torch
+
+
 ####################################
 #
 # Experiment utilities
@@ -67,9 +69,82 @@ def perturb(graph_list, p):
     return perturbed_graph_list
 
 
+def gen_syn3(height=8, feature_generator=None, max_width=1, max_nodes=20, embedding_dim=16, high_gap=True):
+    """ generate pairs of trees with different p.
 
-def gen_syn3():
-    pass
+    l = k - 2
+    p(T1): the depth of the T1 is k
+    p(T2): the depth of the T1 is k - 2
+    "minimal change from p(T1) to p(T2)":  delete the last two levels of T1
+    """
+    basis_type = "tree"
+
+    G_list = dict()
+
+    # T1 generation
+    T1, role_id_T1 = synthetic_structsim.build_graph(
+        height=height, basis_type=basis_type, start=0, max_width=max_width, max_nodes=max_nodes
+    )
+
+    # add node embedding to graph
+    if feature_generator is None:
+        feature_generator = featgen.GaussianFeatureGen(embedding_dim=embedding_dim)
+    feature_generator.gen_node_features(T1)
+    # add node label to graph
+    label_generator = labelgen.ConstLabelGen()
+    label_generator.gen_node_labels(T1, role_id_T1)
+
+    # add depth information to graph
+    depth_generator = featgen.DepthGen()
+    depth_generator.gen_node_depths(T1)
+
+    # add label to T1 root node
+    T1.nodes[0]["y"] = np.array([1], dtype=int)[0]
+    # minimal possible change, to make sure T1 follows the rule of p(T1)
+    depth_T1 = max(nx.shortest_path_length(T1, target=0).values())
+    if depth_T1 != height:
+        print("depth is too small")
+        return None, None
+    depth_node = nx.shortest_path_length(T1, target=0)
+    # l = height - 2
+    # l_depth_nodes = [node for node, depth in depth_node.items() if depth == l]
+    l_list = [height, height - 1]
+    dict_l_depth_nodes = {l: [node for node, depth in depth_node.items() if depth == l] for l in l_list}
+
+    T2 = copy.deepcopy(T1)
+    T2.nodes[0]["y"] = np.array([0], dtype=int)[0]
+
+    # minimal possible change, to make sure T2 follows the rule of p(T2)
+    for l in l_list:
+        for node in dict_l_depth_nodes[l]:
+            neighbors = list(T2.neighbors(node))
+            # delete edges
+            for neighbor in neighbors:
+                T2.remove_edge(node, neighbor)
+            # delete node
+            T2.remove_node(node)
+
+    # add node embedding to graph
+
+    G_list[0] = (T1, T2)
+    # name = basis_type + "_" + str(height)
+
+    # path = os.path.join("log/syn4_base_h20_o20")
+    # writer = SummaryWriter(path)
+    # io_utils.log_graph(writer, G, "graph/full",args=args)
+
+    return G_list
+
+def gen_syn4(height=8, feature_generator=None, max_width=2, max_nodes=20, embedding_dim=16, num_pairs=10,
+             high_gap=True):
+    G_list = list()
+    for _ in range(num_pairs):
+        G_list_item = gen_syn3(height=height, feature_generator=feature_generator, max_width=max_width,
+                               max_nodes=max_nodes, embedding_dim=embedding_dim, high_gap=high_gap)
+        G_list.append(G_list_item[0])
+    graph_index_generator = featgen.GraphIndexGen()
+    graph_index_generator.gen_node_graph_index(G_list)
+    return G_list
 def gen_syn1(height=8, feature_generator=None, max_width=2, max_nodes=20, embedding_dim=16, high_gap=True):
     """ generate pairs of trees with different p.
 
@@ -126,7 +201,8 @@ def gen_syn1(height=8, feature_generator=None, max_width=2, max_nodes=20, embedd
         T2_upper_limit, T2_lower_limit = -5, -10
     for node in l_depth_nodes:
         if T1.nodes[node]["x"][0] < 1:
-            T1.nodes[node]["x"][0] = np.random.uniform(T1_lower_limit, T1_upper_limit)  # TODO: change to a random number larger than 1
+            T1.nodes[node]["x"][0] = np.random.uniform(T1_lower_limit,
+                                                       T1_upper_limit)  # TODO: change to a random number larger than 1
             # T1.nodes[node]["x"][0] = 1 + (1  - T1.nodes[node]["x"][0])
     # create T2 by changing the first element on the level l
     # property of p(T2)
@@ -142,12 +218,13 @@ def gen_syn1(height=8, feature_generator=None, max_width=2, max_nodes=20, embedd
     # l_depth_nodes = [node for node, depth in depth_node.items() if depth == l]
     for node in l_depth_nodes:
         if T2.nodes[node]["x"][0] >= 1:
-            T2.nodes[node]["x"][0] = np.random.uniform(T2_lower_limit, T2_upper_limit)  # TODO: change to a random number smaller than 1
+            T2.nodes[node]["x"][0] = np.random.uniform(T2_lower_limit,
+                                                       T2_upper_limit)  # TODO: change to a random number smaller than 1
             # T2.nodes[node]["feat"][0] = 1 - (T2.nodes[node]["feat"][0] - 1)
 
     for node in l_depth_nodes:
-        T1.nodes[node]["y"] =  np.array([-2], dtype=int)[0]
-        T2.nodes[node]["y"] =  np.array([-2], dtype=int)[0]
+        T1.nodes[node]["y"] = np.array([-2], dtype=int)[0]
+        T2.nodes[node]["y"] = np.array([-2], dtype=int)[0]
     # T2 = T1.copy()
     # role_id_T2 = role_id_T1.copy()
 
@@ -160,14 +237,18 @@ def gen_syn1(height=8, feature_generator=None, max_width=2, max_nodes=20, embedd
 
     return G_list
 
-def gen_syn2(height=8, feature_generator=None, max_width=2, max_nodes=20, embedding_dim=16,num_pairs=10,high_gap=True):
+
+def gen_syn2(height=8, feature_generator=None, max_width=2, max_nodes=20, embedding_dim=16, num_pairs=10,
+             high_gap=True):
     G_list = list()
     for _ in range(num_pairs):
-        G_list_item = gen_syn1(height=height, feature_generator=feature_generator, max_width=max_width, max_nodes=max_nodes, embedding_dim=embedding_dim,high_gap=high_gap)
+        G_list_item = gen_syn1(height=height, feature_generator=feature_generator, max_width=max_width,
+                               max_nodes=max_nodes, embedding_dim=embedding_dim, high_gap=high_gap)
         G_list.append(G_list_item[0])
     graph_index_generator = featgen.GraphIndexGen()
     graph_index_generator.gen_node_graph_index(G_list)
     return G_list
+
 
 if __name__ == "__main__":
     # single depth
@@ -191,9 +272,42 @@ if __name__ == "__main__":
     # torch.save(G, "dataset/G_{}_pairs_depth_{}_width_{}_hdim_{}_gap_{}.pt".format(num_pairs,depth,width,embedding_dim,high_gap))
     #
 
-    # multiple depth
-    depth_list =  [4,6,8,10,11,12,13,14,15,16,32]
-    depth_list = [7,9,]
+    # multiple depth for syn2
+    # depth_list =  [4,6,8,10,11,12,13,14,15,16,32]
+    # depth_list = [7,9,]
+    # # depth_list = [18, 20, 22, 24, 26, 28, 30]
+    # for depth in depth_list:
+    #     embedding_dim = 16
+    #     num_pairs = 1000
+    #     # depth = 4
+    #     width = 1
+    #     high_gap = True
+    #     # G_list = gen_syn1(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,
+    #     #                         max_nodes=50)
+    #     G_list = gen_syn2(height=depth, feature_generator=featgen.GaussianFeatureGen(embedding_dim=embedding_dim),
+    #                       max_width=width,
+    #                       max_nodes=1000, num_pairs=num_pairs, high_gap=high_gap)
+    #     # for tup in G_list:
+    #     #     (T1, T2)= tup
+    #     #     G_list.append(T1)
+    #     #     G_list.append(T2)
+    #     G_list = [T for tup in G_list for T in tup]
+    #     G = nx.disjoint_union_all(G_list)
+    #     # G = G.to_undirected()
+    #     print(
+    #         "dataset/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_{}.pt".format(num_pairs, depth, width, embedding_dim,
+    #                                                                              high_gap))
+    #     torch.save(G, "dataset/G_{}_pairs_depth_{}_width_{}_hdim_{}_gap_{}.pt".format(num_pairs, depth, width,
+    #                                                                                   embedding_dim, high_gap))
+
+    # multiple depth for syn3
+    # G_list = gen_syn3(height=6, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=1,max_nodes=1000)
+    # nx.draw(G_list[0][0], with_labels=True)
+    # plt.show()
+    # nx.draw(G_list[0][1], with_labels=True)
+    # plt.show()
+    depth_list = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 32]
+    # depth_list = [7,9,]
     # depth_list = [18, 20, 22, 24, 26, 28, 30]
     for depth in depth_list:
         embedding_dim = 16
@@ -203,7 +317,7 @@ if __name__ == "__main__":
         high_gap = True
         # G_list = gen_syn1(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,
         #                         max_nodes=50)
-        G_list = gen_syn2(height=depth, feature_generator=featgen.GaussianFeatureGen(embedding_dim=embedding_dim),
+        G_list = gen_syn4(height=depth, feature_generator=featgen.GaussianFeatureGen(embedding_dim=embedding_dim),
                           max_width=width,
                           max_nodes=1000, num_pairs=num_pairs, high_gap=high_gap)
         # for tup in G_list:
@@ -212,11 +326,13 @@ if __name__ == "__main__":
         #     G_list.append(T2)
         G_list = [T for tup in G_list for T in tup]
         G = nx.disjoint_union_all(G_list)
-        # G = G.to_undirected()
+        G = G.to_undirected()
         print(
-            "dataset/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_{}.pt".format(num_pairs, depth, width, embedding_dim,
-                                                                                 high_gap))
-        torch.save(G, "dataset/G_{}_pairs_depth_{}_width_{}_hdim_{}_gap_{}.pt".format(num_pairs, depth, width,
-                                                                                      embedding_dim, high_gap))
+            "dataset/syn4/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_{}.pt".format(num_pairs, depth, width,
+                                                                                      embedding_dim,
+                                                                                      high_gap))
+        torch.save(G, "dataset/syn4/G_{}_pairs_depth_{}_width_{}_hdim_{}_gap_{}.pt".format(num_pairs, depth, width,
+                                                                                           embedding_dim, high_gap))
+
 
 
