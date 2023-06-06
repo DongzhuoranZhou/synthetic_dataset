@@ -49,9 +49,10 @@ class GaussianFeatureGen(FeatureGen):
     def gen_node_features(self, G):
         # feat = np.random.multivariate_normal(self.mu, self.sigma, G.number_of_nodes())
         num_nodes = G.number_of_nodes()
+        nodes_index_list = list(G.nodes())
         embeddings = GaussianFeatureGen.initialize_node_embeddings(num_nodes, self.embedding_dim)
         feat_dict = {
-                i: {"x": embeddings[i]} for i in range(embeddings.shape[0])
+                i: {"x": embeddings[counter]} for counter, i in enumerate(nodes_index_list)
             }
         nx.set_node_attributes(G, feat_dict)
 
@@ -64,8 +65,9 @@ class DepthGen():
         # self.max_depth = max_depth
     def gen_node_depths(self, G):
         depths = nx.shortest_path_length(G, target=0)
+        nodes_index_list = list(G.nodes())
         depth_dict = {
-            i: {"depth": depths[i]} for i in range(len(depths))
+            i: {"depth": depths[i]} for i in nodes_index_list
         }
         nx.set_node_attributes(G, depth_dict)
 
@@ -80,14 +82,18 @@ class GraphIndexGen():
         # G_tree_index_dict = {}
         # G_index_dict = {}
         for G_index, G in enumerate(G_list):
+            # print('G_index:', G_index)
             (T1,T2) = G
             for sub_index, T in enumerate((T1,T2)):
+                # print('sub_index:', sub_index)
                 num_nodes = T.number_of_nodes()
+                nodes_index_list = list(T.nodes())
                 G_index_dict = {
-                    i: {"graph_index": G_index} for i in range(num_nodes)
+                    i: {"graph_index": G_index} for i in nodes_index_list
                 }
-                assert len(G_index_dict) == num_nodes
+                # assert list(range(0,num_nodes)) == nodes_index_list , 'nodes_index_list is not right' + str(nodes_index_list) + str(list(range(0,num_nodes)))
                 nx.set_node_attributes(T, G_index_dict)
+                pass
                 # for i in range(T.number_of_nodes()):
                 #     G_index_dict[G_index] = G_index
                 # G_tree_index_dict[G_index] = G_index_dict

@@ -8,7 +8,7 @@ import copy
 import torch
 import importlib
 from os.path import exists
-
+from collections import defaultdict
 
 ####################################
 #
@@ -314,7 +314,7 @@ if __name__ == "__main__":
     depth_list = [6, 8, 10]
     # depth_list = [7,9,]
     # depth_list = [18, 20, 22, 24, 26, 28, 30]
-    dataset_to_generate = "syn4"
+    dataset_to_generate = "syn2"
 
     if dataset_to_generate == "syn4":
         gen_function = "gen_syn4"
@@ -324,9 +324,9 @@ if __name__ == "__main__":
         gen_function = getattr(importlib.import_module("gengraph"), gen_function)
     for depth in depth_list:
         embedding_dim = 16
-        num_pairs = 10
+        num_pairs = 1000
         # depth = 4
-        width = 1
+        width = 2
         high_gap = True
         # G_list = gen_syn1(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,
         #                         max_nodes=50)
@@ -335,18 +335,39 @@ if __name__ == "__main__":
                               max_width=width,
                               max_nodes=100000000, num_pairs=num_pairs, high_gap=high_gap)
 
-        nx.draw(G_list[0][0], with_labels=True)
-        plt.show()
-        nx.draw(G_list[0][1], with_labels=True)
-        plt.show()
+        # nx.draw(G_list[0][0], with_labels=True)
+        # plt.show()
+        # nx.draw(G_list[0][1], with_labels=True)
+        # plt.show()
         # for tup in G_list:
         #     (T1, T2)= tup
         #     G_list.append(T1)
         #     G_list.append(T2)
         G_list = [T for tup in G_list for T in tup]
+
+        # for G in G_list:
+        #     data = defaultdict(list)
+        #     if G.number_of_nodes() > 0:
+        #         node_attrs = list(next(iter(G.nodes(data=True)))[-1].keys())
+        #     else:
+        #         node_attrs = {}
+
+
+
+            # for i, (_, feat_dict) in enumerate(G.nodes(data=True)):
+            #     print(i)
+            #     if set(feat_dict.keys()) != set(node_attrs):
+            #         # print(i, G.nodes[i])
+            #         nx.draw(G, with_labels=True)
+            #         plt.show()
+            #         print(set(feat_dict.keys()), set(node_attrs))
+            #         raise ValueError('Not all nodes contain the same attributes')
+            #     for key, value in feat_dict.items():
+            #         data[str(key)].append(value)
+
         G = nx.disjoint_union_all(G_list)
         G = G.to_undirected()
-        root_dir = "dataset/{}".format(dataset_to_generate,width)
+        root_dir = "dataset/{}/width_{}".format(dataset_to_generate,width)
         if not exists(root_dir):
             os.makedirs(root_dir)
         print(
