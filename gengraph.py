@@ -110,7 +110,7 @@ def gen_syn3(height=8, feature_generator=None, max_width=1, max_nodes=20, embedd
     depth_node = nx.shortest_path_length(T1, target=0)
     # l = height - 2
     # l_depth_nodes = [node for node, depth in depth_node.items() if depth == l]
-    l_list = [height, height - 1]
+    l_list = [height, height - 1, height - 2]
     dict_l_depth_nodes = {l: [node for node, depth in depth_node.items() if depth == l] for l in l_list}
 
     T2 = copy.deepcopy(T1)
@@ -311,10 +311,11 @@ if __name__ == "__main__":
     # plt.show()
     # nx.draw(G_list[0][1], with_labels=True)
     # plt.show()
-    depth_list = [6, 8, 10]
+    depth_list = [6, 8, 10,12,14,16,18,20]
+    depth_list = [11,13,15,22, 24, 26, 28, 30]
     # depth_list = [7,9,]
     # depth_list = [18, 20, 22, 24, 26, 28, 30]
-    dataset_to_generate = "syn2"
+    dataset_to_generate = "syn4"
 
     if dataset_to_generate == "syn4":
         gen_function = "gen_syn4"
@@ -326,7 +327,7 @@ if __name__ == "__main__":
         embedding_dim = 16
         num_pairs = 1000
         # depth = 4
-        width = 2
+        width = 1
         high_gap = True
         # G_list = gen_syn1(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,
         #                         max_nodes=50)

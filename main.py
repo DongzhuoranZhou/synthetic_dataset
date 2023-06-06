@@ -91,7 +91,7 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
     sh.setFormatter(formatter)
     logger.addHandler(sh)
 
-    width = 2
+    width = 1
     logging.basicConfig(level=logging.INFO,
                         )
     args.logdir = '{}/dataset_{}/width_{}/hdim{}/Model_{}_Norm_{}_Trick_{}'.format(logdir_root,args.dataset,width,str(args.num_feats),
@@ -108,7 +108,7 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
 
     for num_layers in num_layers_lst:
 
-        dataset_name = "dataset/{}/width_{}/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_True.pt".format(args.dataset,width,num_pairs,6,width,
+        dataset_name = "dataset/{}/width_{}/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_True.pt".format(args.dataset,width,num_pairs,num_layers,width,
                                                                                           num_feature)
         args.num_layers = num_layers
         args.dataset_name = dataset_name
@@ -147,7 +147,7 @@ if __name__ == "__main__":
     args = configs.arg_parse()
 
     # Combination of hyperparameters
-    type_models_list = ['GCN','GAT','simpleGCN','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN']
+    type_models_list = ['GAT','simpleGCN','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN','GCN',]
     # type_models_list = ['GPRGNN']
     # type_models_list = ['GCN']
     type_norm_list = ['pair', 'batch','group', 'None']
@@ -159,6 +159,7 @@ if __name__ == "__main__":
     # type_norm_list = ['None']
     # type_trick_list = ['None']
     num_layers_lst = [3,4,6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    # num_layers_lst = [11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     # num_layers_lst = [4,6]
     # num_layers_lst = [4, 6]
     # num_layers_lst = [4, 6, 8, 10, 12, 14, 16, 18, 20]
