@@ -81,11 +81,12 @@ class GraphIndexGen():
         # G_index_dict = {}
         for G_index, G in enumerate(G_list):
             (T1,T2) = G
-            for T in (T1,T2):
+            for sub_index, T in enumerate((T1,T2)):
                 num_nodes = T.number_of_nodes()
                 G_index_dict = {
                     i: {"graph_index": G_index} for i in range(num_nodes)
                 }
+                assert len(G_index_dict) == num_nodes
                 nx.set_node_attributes(T, G_index_dict)
                 # for i in range(T.number_of_nodes()):
                 #     G_index_dict[G_index] = G_index

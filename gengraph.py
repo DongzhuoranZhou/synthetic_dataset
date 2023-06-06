@@ -6,6 +6,8 @@ import numpy as np
 import networkx as nx
 import copy
 import torch
+import importlib
+from os.path import exists
 
 
 ####################################
@@ -70,7 +72,7 @@ def perturb(graph_list, p):
 
 
 def gen_syn3(height=8, feature_generator=None, max_width=1, max_nodes=20, embedding_dim=16, high_gap=True):
-    """ generate pairs of trees with different p.
+    """ generate pairs of trees with different p. Topology difference
 
     l = k - 2
     p(T1): the depth of the T1 is k
@@ -125,7 +127,7 @@ def gen_syn3(height=8, feature_generator=None, max_width=1, max_nodes=20, embedd
             T2.remove_node(node)
 
     # add node embedding to graph
-
+    print("T2", "num: ", T2.number_of_nodes(), "depth: ", max(nx.shortest_path_length(T2, target=0).values()))
     G_list[0] = (T1, T2)
     # name = basis_type + "_" + str(height)
 
@@ -134,6 +136,7 @@ def gen_syn3(height=8, feature_generator=None, max_width=1, max_nodes=20, embedd
     # io_utils.log_graph(writer, G, "graph/full",args=args)
 
     return G_list
+
 
 def gen_syn4(height=8, feature_generator=None, max_width=2, max_nodes=20, embedding_dim=16, num_pairs=10,
              high_gap=True):
@@ -145,6 +148,8 @@ def gen_syn4(height=8, feature_generator=None, max_width=2, max_nodes=20, embedd
     graph_index_generator = featgen.GraphIndexGen()
     graph_index_generator.gen_node_graph_index(G_list)
     return G_list
+
+
 def gen_syn1(height=8, feature_generator=None, max_width=2, max_nodes=20, embedding_dim=16, high_gap=True):
     """ generate pairs of trees with different p.
 
@@ -301,25 +306,39 @@ if __name__ == "__main__":
     #                                                                                   embedding_dim, high_gap))
 
     # multiple depth for syn3
-    # G_list = gen_syn3(height=6, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=1,max_nodes=1000)
+    # G_list = gen_syn3(height=4, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,max_nodes=1000)
     # nx.draw(G_list[0][0], with_labels=True)
     # plt.show()
     # nx.draw(G_list[0][1], with_labels=True)
     # plt.show()
-    depth_list = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 32]
+    depth_list = [6, 8, 10]
     # depth_list = [7,9,]
     # depth_list = [18, 20, 22, 24, 26, 28, 30]
+    dataset_to_generate = "syn4"
+
+    if dataset_to_generate == "syn4":
+        gen_function = "gen_syn4"
+        gen_function = getattr(importlib.import_module("gengraph"), gen_function)
+    elif dataset_to_generate == "syn2":
+        gen_function = "gen_syn2"
+        gen_function = getattr(importlib.import_module("gengraph"), gen_function)
     for depth in depth_list:
         embedding_dim = 16
-        num_pairs = 1000
+        num_pairs = 10
         # depth = 4
         width = 1
         high_gap = True
         # G_list = gen_syn1(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,
         #                         max_nodes=50)
-        G_list = gen_syn4(height=depth, feature_generator=featgen.GaussianFeatureGen(embedding_dim=embedding_dim),
-                          max_width=width,
-                          max_nodes=1000, num_pairs=num_pairs, high_gap=high_gap)
+
+        G_list = gen_function(height=depth, feature_generator=featgen.GaussianFeatureGen(embedding_dim=embedding_dim),
+                              max_width=width,
+                              max_nodes=100000000, num_pairs=num_pairs, high_gap=high_gap)
+
+        nx.draw(G_list[0][0], with_labels=True)
+        plt.show()
+        nx.draw(G_list[0][1], with_labels=True)
+        plt.show()
         # for tup in G_list:
         #     (T1, T2)= tup
         #     G_list.append(T1)
@@ -327,12 +346,13 @@ if __name__ == "__main__":
         G_list = [T for tup in G_list for T in tup]
         G = nx.disjoint_union_all(G_list)
         G = G.to_undirected()
+        root_dir = "dataset/{}".format(dataset_to_generate,width)
+        if not exists(root_dir):
+            os.makedirs(root_dir)
         print(
-            "dataset/syn4/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_{}.pt".format(num_pairs, depth, width,
+            "{}/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_{}.pt".format(root_dir, num_pairs, depth, width,
+                                                                            embedding_dim,
+                                                                            high_gap))
+        torch.save(G, "{}/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_{}.pt".format(root_dir, num_pairs, depth, width,
                                                                                       embedding_dim,
                                                                                       high_gap))
-        torch.save(G, "dataset/syn4/G_{}_pairs_depth_{}_width_{}_hdim_{}_gap_{}.pt".format(num_pairs, depth, width,
-                                                                                           embedding_dim, high_gap))
-
-
-

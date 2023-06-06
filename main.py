@@ -106,16 +106,16 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
     acc_dict = {}
     if not exists(args.logdir):
         os.makedirs(args.logdir)
-
+    width = 2
     for num_layers in num_layers_lst:
-        dataset_name = "dataset/{}/G_{}_pairs_depth_{}_width_1_hdim_{}_gap_True.pt".format(args.dataset,num_pairs,num_layers,
+
+        dataset_name = "dataset/{}/G_{}_pairs_depth_{}_width_1_hdim_{}_high_gap_True.pt".format(args.dataset,num_pairs,6,
                                                                                           num_feature)
         args.num_layers = num_layers
         args.dataset_name = dataset_name
         mean_train_acc, std_train_acc, mean_test_acc, std_test_acc = main(args)
         acc_lst.append((mean_train_acc, std_train_acc, mean_test_acc, std_test_acc))
         acc_dict[num_layers] = (mean_train_acc, std_train_acc, mean_test_acc, std_test_acc)
-
     # summary log
     logfilename = "{}/{}_{}layers_{}_summary.log".format(args.logdir, args.type_model,
                                                          "_".join(str(e) for e in num_layers_lst),
@@ -148,7 +148,8 @@ if __name__ == "__main__":
     args = configs.arg_parse()
 
     # Combination of hyperparameters
-    type_models_list = ['GCN','GAT','simpleGCN','GCNII','APPNP','DAGNN','JKNet','GPRGNN']
+    type_models_list = ['GCN','GAT','simpleGCN','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN']
+    type_models_list = ['GPRGNN']
     # type_models_list = ['GCN']
     type_norm_list = ['pair', 'batch','group', 'None']
     # type_norm_list = ['group', 'None']
@@ -158,8 +159,8 @@ if __name__ == "__main__":
     # type_norm_list = ['GPRGNN']
     # type_norm_list = ['None']
     # type_trick_list = ['None']
-    num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
-    num_layers_lst = [4,6]
+    num_layers_lst = [4,6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    # num_layers_lst = [4,6]
     # num_layers_lst = [4, 6]
     # num_layers_lst = [4, 6, 8, 10, 12, 14, 16, 18, 20]
     param_combinations = []

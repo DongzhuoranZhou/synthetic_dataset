@@ -8,7 +8,7 @@ from ogb.nodeproppred import PygNodePropPredDataset
 from torch_geometric.datasets import Planetoid, Coauthor, WebKB, Actor, Amazon
 from torch_geometric.utils import remove_self_loops, add_self_loops, to_undirected, to_networkx
 from torch_geometric.utils import from_networkx
-
+from collections import defaultdict
 
 def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32",direction="directed"):
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', dataset)
@@ -26,6 +26,22 @@ def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32"
 
 
         # G = G.to_undirected()
+        data = defaultdict(list)
+        if G.number_of_nodes() > 0:
+            node_attrs = list(next(iter(G.nodes(data=True)))[-1].keys())
+        else:
+            node_attrs = {}
+
+
+
+        for i, (_, feat_dict) in enumerate(G.nodes(data=True)):
+            print(i)
+            if set(feat_dict.keys()) != set(node_attrs):
+                # print(i, G.nodes[i])
+                print(set(feat_dict.keys()), set(node_attrs))
+                raise ValueError('Not all nodes contain the same attributes')
+            for key, value in feat_dict.items():
+                data[str(key)].append(value)
         data = from_networkx(G)
         data.x = data.x.to(torch.float64)
         if precisition == "float32":
