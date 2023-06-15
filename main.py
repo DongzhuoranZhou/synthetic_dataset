@@ -154,7 +154,7 @@ if __name__ == "__main__":
     # type_models_list = ['JKNet']
     # type_models_list = ['GPRGNN']
     type_models_list = ['DAGNN']
-    # type_models_list = ['GCN']
+    type_models_list = ['GCNII']
     type_norm_list = ['pair', 'batch','group', 'None']
     # type_norm_list = ['group', 'None']
     type_norm_list = ['None']

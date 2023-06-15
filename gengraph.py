@@ -10,6 +10,7 @@ import importlib
 from os.path import exists
 from collections import defaultdict
 
+
 ####################################
 #
 # Experiment utilities
@@ -311,12 +312,12 @@ if __name__ == "__main__":
     # plt.show()
     # nx.draw(G_list[0][1], with_labels=True)
     # plt.show()
-    depth_list = [6, 8, 10,12,14,16,18,20]
-    depth_list = [11,13,15,22, 24, 26, 28, 30]
-    depth_list = [6]
+    depth_list = [6, 8, 10, 12, 14, 16, 18, 20]
+    depth_list = [11, 13, 15, 22, 24, 26, 28, 30]
+    depth_list = [16]
     # depth_list = [7,9,]
     # depth_list = [18, 20, 22, 24, 26, 28, 30]
-    dataset_to_generate = "syn4"
+    dataset_to_generate = "syn2"
 
     if dataset_to_generate == "syn4":
         gen_function = "gen_syn4"
@@ -326,7 +327,7 @@ if __name__ == "__main__":
         gen_function = getattr(importlib.import_module("gengraph"), gen_function)
     for depth in depth_list:
         embedding_dim = 16
-        num_pairs = 1
+        num_pairs = 1000
         # depth = 4
         width = 3
         high_gap = True
@@ -337,10 +338,10 @@ if __name__ == "__main__":
                               max_width=width,
                               max_nodes=100000000, num_pairs=num_pairs, high_gap=high_gap)
 
-        nx.draw(G_list[0][0], with_labels=True)
-        plt.show()
-        nx.draw(G_list[0][1], with_labels=True)
-        plt.show()
+        # nx.draw(G_list[0][0], with_labels=True)
+        # plt.show()
+        # nx.draw(G_list[0][1], with_labels=True)
+        # plt.show()
         # for tup in G_list:
         #     (T1, T2)= tup
         #     G_list.append(T1)
@@ -354,22 +355,20 @@ if __name__ == "__main__":
         #     else:
         #         node_attrs = {}
 
-
-
-            # for i, (_, feat_dict) in enumerate(G.nodes(data=True)):
-            #     print(i)
-            #     if set(feat_dict.keys()) != set(node_attrs):
-            #         # print(i, G.nodes[i])
-            #         nx.draw(G, with_labels=True)
-            #         plt.show()
-            #         print(set(feat_dict.keys()), set(node_attrs))
-            #         raise ValueError('Not all nodes contain the same attributes')
-            #     for key, value in feat_dict.items():
-            #         data[str(key)].append(value)
+        # for i, (_, feat_dict) in enumerate(G.nodes(data=True)):
+        #     print(i)
+        #     if set(feat_dict.keys()) != set(node_attrs):
+        #         # print(i, G.nodes[i])
+        #         nx.draw(G, with_labels=True)
+        #         plt.show()
+        #         print(set(feat_dict.keys()), set(node_attrs))
+        #         raise ValueError('Not all nodes contain the same attributes')
+        #     for key, value in feat_dict.items():
+        #         data[str(key)].append(value)
 
         G = nx.disjoint_union_all(G_list)
         G = G.to_undirected()
-        root_dir = "dataset/{}/width_{}".format(dataset_to_generate,width)
+        root_dir = "dataset/{}/width_{}".format(dataset_to_generate, width)
         if not exists(root_dir):
             os.makedirs(root_dir)
         print(
@@ -379,3 +378,4 @@ if __name__ == "__main__":
         torch.save(G, "{}/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_{}.pt".format(root_dir, num_pairs, depth, width,
                                                                                       embedding_dim,
                                                                                       high_gap))
+        print('num of nodes: ', G.number_of_nodes())
