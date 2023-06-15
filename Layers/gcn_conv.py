@@ -201,6 +201,7 @@ class GCNConv(MessagePassing):
         self.improved = improved
         self.cached = cached
         self.add_self_loops = add_self_loops
+        # normalize = False
         self.normalize = normalize
         self.gcn_norm_type = kwargs['gcn_norm_type']
         self._cached_edge_index = None

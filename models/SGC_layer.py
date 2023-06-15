@@ -59,7 +59,7 @@ class SGConv(MessagePassing):
 
     def __init__(self, in_channels: int, out_channels: int, K: int = 1,
                  cached: bool = False, add_self_loops: bool = True,
-                 bias: bool = True, bn: bool = True, pn: bool = True, gn: bool = True, dropout: float = 0.,
+                 bias: bool = True, bn: bool = True, pn: bool = True, gn: bool = True, dropout: float = 0.,normalize: bool = True,
                  lin_first: bool = False, **kwargs):
         kwargs.setdefault('aggr', 'add')
         super(SGConv, self).__init__(**kwargs)
@@ -69,7 +69,7 @@ class SGConv(MessagePassing):
         self.K = K
         self.cached = cached
         self.add_self_loops = add_self_loops
-
+        self.normalize = normalize
         self._cached_x = None
 
         self.lin = Linear(in_channels, out_channels, bias=bias)
@@ -111,15 +111,26 @@ class SGConv(MessagePassing):
         cache = self._cached_x
         # print("cache: ", cache)
         if cache is None:
+            # if self.normalize:
             if isinstance(edge_index, Tensor):
-                edge_index, edge_weight = gcn_norm(  # yapf: disable
-                    edge_index, edge_weight, x.size(self.node_dim), False,
-                    self.add_self_loops, dtype=x.dtype)
+                if self.normalize:
+                    edge_index, edge_weight = gcn_norm(  # yapf: disable
+                        edge_index, edge_weight, x.size(self.node_dim), False,
+                        self.add_self_loops, dtype=x.dtype)
+                elif edge_weight is None:
+                    edge_weight = torch.ones((edge_index.size(1),), dtype=x.dtype,
+                                             device=edge_index.device)
             elif isinstance(edge_index, SparseTensor):
-                edge_index = gcn_norm(  # yapf: disable
-                    edge_index, edge_weight, x.size(self.node_dim), False,
-                    self.add_self_loops, dtype=x.dtype)
-
+                if self.normalize:
+                    edge_index = gcn_norm(  # yapf: disable
+                        edge_index, edge_weight, x.size(self.node_dim), False,
+                        self.add_self_loops, dtype=x.dtype)
+                elif edge_weight is None:
+                    edge_weight = torch.ones((edge_index.size(1),), dtype=x.dtype,
+                                             device=edge_index.device)
+            # elif edge_weight is None:
+            #         edge_weight = torch.ones((edge_index.size(1),), dtype=x.dtype,
+            #                                  device=edge_index.device)
             for k in range(self.K):
                 # propagate_type: (x: Tensor, edge_weight: OptTensor)
                 x = self.propagate(edge_index, x=x, edge_weight=edge_weight,

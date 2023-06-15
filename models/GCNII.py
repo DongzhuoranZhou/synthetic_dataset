@@ -20,7 +20,7 @@ class GCNII(nn.Module):
         self.convs = torch.nn.ModuleList()
         self.convs.append(torch.nn.Linear(self.num_feats, self.dim_hidden))
         for _ in range(self.num_layers):
-            self.convs.append(gcn_conv(self.dim_hidden, self.dim_hidden))
+            self.convs.append(gcn_conv(self.dim_hidden, self.dim_hidden,normalize=self.normalize))
 
         self.convs.append(torch.nn.Linear(self.dim_hidden, self.num_classes))
         self.reg_params = list(self.convs[1:-1].parameters())

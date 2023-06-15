@@ -19,7 +19,7 @@ class SGC(nn.Module):
         self.lin_first = True if args.dataset == 'Coauthor_Physics' else False
         self.SGC = SGConv(self.num_feats, self.num_classes, K=self.num_layers,
                           cached=self.cached, bias=False, bn=self.bn, pn=self.pn,gn=self.gn, dropout=self.dropout,
-                          lin_first=self.lin_first)
+                          lin_first=self.lin_first,normalize=self.normalize)
         self.optimizer = torch.optim.Adam(self.parameters(),
                                           lr=self.lr, weight_decay=self.weight_decay)
 

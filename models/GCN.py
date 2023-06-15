@@ -32,7 +32,8 @@ class GCN(nn.Module):
         # self.bn_ACM = nn.ModuleList([])
         # for i in range(self.num_layers - 1):
         #     self.bn_ACM.append(torch.nn.BatchNorm1d(self.in_channels))
-        self.layers_GCN.append(GCNConv(self.num_feats, self.dim_hidden, cached=self.cached,layer_index=0,gcn_norm_type=self.gcn_norm_type))
+
+        self.layers_GCN.append(GCNConv(self.num_feats, self.dim_hidden, cached=self.cached,layer_index=0,gcn_norm_type=self.gcn_norm_type,normalize=self.normalize))
         if self.type_norm == 'batch':
             self.layers_bn.append(torch.nn.BatchNorm1d(self.dim_hidden))
         elif self.type_norm == 'pair':
@@ -44,7 +45,7 @@ class GCN(nn.Module):
             self.layers_res.append(ResidualConnection(alpha=self.alpha))
         for i in range(self.num_layers - 2):
             self.layers_GCN.append(
-                GCNConv(self.dim_hidden, self.dim_hidden, cached=self.cached,layer_index=0,gcn_norm_type=self.gcn_norm_type))
+                GCNConv(self.dim_hidden, self.dim_hidden, cached=self.cached,layer_index=0,gcn_norm_type=self.gcn_norm_type,normalize=self.normalize))
 
             if self.type_norm == 'batch':
                 self.layers_bn.append(torch.nn.BatchNorm1d(self.dim_hidden))
@@ -55,7 +56,7 @@ class GCN(nn.Module):
 
             if AcontainsB(self.type_trick, ['Residual']):
                 self.layers_res.append(ResidualConnection(alpha=self.alpha))
-        self.layers_GCN.append(GCNConv(self.dim_hidden, self.num_classes, cached=self.cached,layer_index=-1,gcn_norm_type=self.gcn_norm_type))
+        self.layers_GCN.append(GCNConv(self.dim_hidden, self.num_classes, cached=self.cached,layer_index=-1,gcn_norm_type=self.gcn_norm_type,normalize=self.normalize))
 
         if self.type_norm == 'batch':
             self.layers_bn.append(torch.nn.BatchNorm1d(self.dim_hidden))

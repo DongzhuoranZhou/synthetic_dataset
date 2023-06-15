@@ -85,7 +85,7 @@ class GCNIIdenseConv(MessagePassing):
         self.improved = improved
         self.cached = cached
         self.weight = Parameter(torch.Tensor(in_channels, out_channels))
-
+        self.normalize = kwargs.get('normalize', True)
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -124,8 +124,13 @@ class GCNIIdenseConv(MessagePassing):
 
         if not self.cached or self.cached_result is None:
             self.cached_num_edges = edge_index.size(1)
-            edge_index, norm = self.norm(edge_index, x.size(0), edge_weight,
-                                         self.improved, x.dtype)
+            if self.normalize:
+                edge_index, norm = self.norm(edge_index, x.size(0), edge_weight,
+                                             self.improved, x.dtype)
+            else:
+                edge_index = edge_index
+                norm = torch.ones((edge_index.size(1), ),
+                                     device=edge_index.device)
             self.cached_result = edge_index, norm
 
         edge_index, norm = self.cached_result

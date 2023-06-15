@@ -35,7 +35,7 @@ class Prop(MessagePassing):
         self.cached = cached
         self.edge_index = None
         self.norm = None
-
+        self.normalize = kwargs['normalize']
 
     def forward(self, x, edge_index, edge_weight=None):
         # edge_index, norm = GCNConv.norm(edge_index, x.size(0), edge_weight, dtype=x.dtype)
@@ -44,10 +44,24 @@ class Prop(MessagePassing):
             if self.edge_index is not None and self.norm is not None:
                 edge_index, norm = self.edge_index, self.norm
             else:
-                edge_index, norm = gcn_norm(edge_index, edge_weight, x.size(0), dtype=x.dtype)
-                self.edge_index, self.norm = edge_index, norm
+                if self.normalize:
+                    edge_index, norm = gcn_norm(edge_index, edge_weight, x.size(0), dtype=x.dtype)
+                    self.edge_index, self.norm = edge_index, norm
+                elif edge_weight is None:
+                    norm = torch.ones((edge_index.size(1),),
+                                      device=edge_index.device)
+                    self.edge_index = edge_index
+                    self.norm = norm
         else:
-            edge_index, norm = gcn_norm(edge_index, edge_weight, x.size(0), dtype=x.dtype)
+            if self.normalize:
+                edge_index, norm = gcn_norm(edge_index, edge_weight, x.size(0), dtype=x.dtype)
+                self.edge_index = edge_index
+                self.norm = norm
+            elif edge_weight is None:
+                    norm = torch.ones((edge_index.size(1),),
+                                      device=edge_index.device)
+                    self.edge_index = edge_index
+                    self.norm = norm
 
         preds = []
         preds.append(x)
@@ -82,7 +96,8 @@ class DAGNN(torch.nn.Module):
         self.lin2 = Linear(self.dim_hidden, args.num_classes)
         if args.dataset == 'ogbn-arxiv':
             self.bn = torch.nn.BatchNorm1d(self.dim_hidden)
-        self.prop = Prop(args.num_classes, args.num_layers)
+
+        self.prop = Prop(args.num_classes, args.num_layers,normalize=self.normalize)
         self.optimizer = torch.optim.Adam(self.parameters(),
                                           lr=self.lr, weight_decay=self.weight_decay)
 

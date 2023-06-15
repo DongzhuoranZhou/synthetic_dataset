@@ -1,6 +1,15 @@
 import argparse
 import utils.parser_utils as parser_utils
 
+def str_to_bool(value):
+    if isinstance(value, bool):
+        return value
+    if value.lower() in ('true', 't', 'yes', 'y', '1','True'):
+        return True
+    elif value.lower() in ('false', 'f', 'no', 'n', '0','False'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Invalid boolean value: {}'.format(value))
 
 def reset_dataset_dependent_parameters(args):
 
@@ -142,6 +151,8 @@ def arg_parse():
                         help="graph dropout rate (for dropout tricks)")  # 5e-4
     parser.add_argument('--layerwise_dropout', action='store_true', default=False)
     parser.add_argument('--with_ACM', action='store_true', default=False)
+    parser.add_argument('--normalize', type=str_to_bool, default=True,
+                        help='normalize the adjacency matrix or not')
     parser.add_argument('--gcn_norm_type', type=str, default='sym', choices=['sym', 'rw'])
 
     args = parser.parse_args()

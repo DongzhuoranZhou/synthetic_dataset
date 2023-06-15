@@ -21,6 +21,7 @@ class GPR_prop(MessagePassing):
         self.K = K
         self.Init = Init
         self.alpha = alpha
+        self.normalize = kwargs['normalize']
 
         assert Init in ['SGC', 'PPR', 'NPPR', 'Random', 'WS']
         if Init == 'SGC':
@@ -53,9 +54,12 @@ class GPR_prop(MessagePassing):
         self.temp.data[-1] = (1 - self.alpha) ** self.K
 
     def forward(self, x, edge_index, edge_weight=None,w_for_norm=None, **kwargs):
-        edge_index, norm = gcn_norm(
-            edge_index, edge_weight, num_nodes=x.size(0), dtype=x.dtype)
-
+        if self.normalize:
+            edge_index, edge_weight = gcn_norm(
+                edge_index, edge_weight, num_nodes=x.size(0), dtype=x.dtype)
+        elif edge_weight is None:
+            edge_weight = torch.ones((edge_index.size(1), ),
+                                     device=edge_index.device)
         if w_for_norm != None:
             w_for_norm.data = w_for_norm.abs()
             # w_for_norm = torch.ones_like(w_for_norm)
@@ -68,7 +72,7 @@ class GPR_prop(MessagePassing):
         hidden = x * (self.temp[0])
         for k in range(self.K):
 
-            x = self.propagate(edge_index, x=x, norm=norm)
+            x = self.propagate(edge_index, x=x, edge_weight=edge_weight)
 
             if w_for_norm != None:
                 if torch.isnan(x).any():
@@ -83,8 +87,8 @@ class GPR_prop(MessagePassing):
             hidden = hidden + gamma * x
         return hidden
 
-    def message(self, x_j, norm):
-        return norm.view(-1, 1) * x_j
+    def message(self, x_j, edge_weight):
+        return edge_weight.view(-1, 1) * x_j
 
     def __repr__(self):
         return '{}(K={}, temp={})'.format(self.__class__.__name__, self.K,
@@ -101,7 +105,7 @@ class GPRGNN(torch.nn.Module):
         # layers
         self.lin1 = Linear(self.num_feats, self.dim_hidden)
         self.lin2 = Linear(self.dim_hidden, self.num_classes)
-        self.prop1 = GPR_prop(self.num_layers, self.alpha, self.Init)
+        self.prop1 = GPR_prop(self.num_layers, self.alpha, self.Init,normalize=self.normalize)
 
         self.dprate = args.dropout
         self.dropout = args.dropout
