@@ -15,14 +15,14 @@ def reset_dataset_dependent_parameters(args):
 
 
     if args.dataset == 'syn2':
-        args.num_feats = 16
+        args.num_feats =16
         args.num_classes = 2
         args.dropout = 0.5  # 0.5
         args.lr = 0.005  # 0.005
         args.weight_decay = 5e-4
         args.epochs = 1000
         args.patience = 200  # 100
-        args.dim_hidden = 16
+        args.dim_hidden = 64
         args.activation = 'relu'
         # args.num_layers = 2
     if args.dataset == 'syn4':
@@ -33,7 +33,7 @@ def reset_dataset_dependent_parameters(args):
         args.weight_decay = 5e-4
         args.epochs = 1000
         args.patience = 200  # 100
-        args.dim_hidden = 16
+        args.dim_hidden = 64
         args.activation = 'relu'
         # args.num_layers = 2
     if args.dataset == 'Cora':

@@ -91,7 +91,7 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
     sh.setFormatter(formatter)
     logger.addHandler(sh)
 
-    width = 1
+    width = 2
     logging.basicConfig(level=logging.INFO,
                         )
     args.logdir = '{}/dataset_{}/width_{}/hdim{}/Model_{}_Norm_{}_Trick_{}'.format(logdir_root,args.dataset,width,str(args.num_feats),
@@ -154,7 +154,8 @@ if __name__ == "__main__":
     # type_models_list = ['JKNet']
     # type_models_list = ['GPRGNN']
     type_models_list = ['DAGNN']
-    type_models_list = ['GCNII']
+    # type_models_list = ['GPRGNN']
+    type_models_list = ['APPNP']
     type_norm_list = ['pair', 'batch','group', 'None']
     # type_norm_list = ['group', 'None']
     type_norm_list = ['None']
@@ -166,7 +167,7 @@ if __name__ == "__main__":
     # type_trick_list = ['None']
     num_layers_lst = [3,4,6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
-    num_layers_lst = [4]
+    # num_layers_lst = [4]
     # num_layers_lst = [11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     # num_layers_lst = [4,6]
     # num_layers_lst = [4, 6]

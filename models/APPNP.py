@@ -57,28 +57,32 @@ class APPNP(MessagePassing):
                 edge_weight: OptTensor = None) -> Tensor:
         """"""
         # implemented based on: https://github.com/klicperajo/ppnp/blob/master/ppnp/pytorch/ppnp.py
-        if self.normalize:
-            if isinstance(edge_index, Tensor):
-                cache = self._cached_edge_index
-                if cache is None:
+
+        if isinstance(edge_index, Tensor):
+            cache = self._cached_edge_index
+            if cache is None:
+                if self.normalize:
                     edge_index, edge_weight = gcn_norm(  # yapf: disable
                         edge_index, edge_weight, x.size(0), False,
                         self.add_self_loops, dtype=x.dtype)
-                    if self.cached:
-                        self._cached_edge_index = (edge_index, edge_weight)
-                else:
-                    edge_index, edge_weight = cache[0], cache[1]
+                elif edge_weight is None:
+                    edge_weight = torch.ones(
+                        edge_index.size(1), dtype=x.dtype, device=x.device)
+                if self.cached:
+                    self._cached_edge_index = (edge_index, edge_weight)
+            else:
+                edge_index, edge_weight = cache[0], cache[1]
 
-            elif isinstance(edge_index, SparseTensor):
-                cache = self._cached_adj_t
-                if cache is None:
-                    edge_index = gcn_norm(  # yapf: disable
-                        edge_index, edge_weight, x.size(0), False,
-                        self.add_self_loops, dtype=x.dtype)
-                    if self.cached:
-                        self._cached_adj_t = edge_index
-                else:
-                    edge_index = cache
+        elif isinstance(edge_index, SparseTensor):
+            cache = self._cached_adj_t
+            if cache is None:
+                edge_index = gcn_norm(  # yapf: disable
+                    edge_index, edge_weight, x.size(0), False,
+                    self.add_self_loops, dtype=x.dtype)
+                if self.cached:
+                    self._cached_adj_t = edge_index
+            else:
+                edge_index = cache
 
         # input transformation according to the official implementation
         x = F.dropout(x, p=self.embedding_dropout, training=self.training)

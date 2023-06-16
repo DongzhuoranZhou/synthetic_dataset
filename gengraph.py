@@ -314,10 +314,10 @@ if __name__ == "__main__":
     # plt.show()
     depth_list = [6, 8, 10, 12, 14, 16, 18, 20]
     depth_list = [11, 13, 15, 22, 24, 26, 28, 30]
-    depth_list = [16]
+    depth_list = [4]
     # depth_list = [7,9,]
     # depth_list = [18, 20, 22, 24, 26, 28, 30]
-    dataset_to_generate = "syn2"
+    dataset_to_generate = "syn4"
 
     if dataset_to_generate == "syn4":
         gen_function = "gen_syn4"
@@ -329,7 +329,7 @@ if __name__ == "__main__":
         embedding_dim = 16
         num_pairs = 1000
         # depth = 4
-        width = 3
+        width = 2
         high_gap = True
         # G_list = gen_syn1(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,
         #                         max_nodes=50)
