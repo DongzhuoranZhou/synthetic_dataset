@@ -103,6 +103,13 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
     num_pairs = args.num_pairs
     acc_lst = []
     acc_dict = {}
+    # summary log
+    logfilename = "{}/{}_{}layers_{}_summary.log".format(args.logdir, args.type_model,
+                                                         "_".join([str(num_layers_lst[0]), str(num_layers_lst[-1])]),
+                                                         args.dataset)
+    logging.info("logfilename:", logfilename)
+    print("logfilename:", logfilename)
+
     if not exists(args.logdir):
         os.makedirs(args.logdir)
 
@@ -115,10 +122,7 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
         mean_train_acc, std_train_acc, mean_test_acc, std_test_acc = main(args)
         acc_lst.append((mean_train_acc, std_train_acc, mean_test_acc, std_test_acc))
         acc_dict[num_layers] = (mean_train_acc, std_train_acc, mean_test_acc, std_test_acc)
-    # summary log
-    logfilename = "{}/{}_{}layers_{}_summary.log".format(args.logdir, args.type_model,
-                                                         "_".join(str(e) for e in num_layers_lst),
-                                                         args.dataset)
+
     fh = logging.FileHandler(logfilename)
     fh.setFormatter(formatter)
     logger.addHandler(fh)
@@ -133,7 +137,7 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
     logging.info("acc_dict: {}".format(acc_dict))
     logging.info("num_layers_lst: {}".format(num_layers_lst))
     torch.save(acc_dict, "{}/{}_{}layers_{}_summary.pt".format(args.logdir, args.type_model,
-                                                               "_".join(str(e) for e in num_layers_lst),
+                                                               "_".join([str(num_layers_lst[0]), str(num_layers_lst[-1])]),
                                                                args.dataset))
     for handler in logger.handlers:
         # 判断处理程序是否是指定的FileHandler
@@ -155,7 +159,7 @@ if __name__ == "__main__":
     # type_models_list = ['GPRGNN']
     type_models_list = ['DAGNN']
     # type_models_list = ['GPRGNN']
-    type_models_list = ['APPNP']
+    # type_models_list = ['APPNP']
     type_norm_list = ['pair', 'batch','group', 'None']
     # type_norm_list = ['group', 'None']
     type_norm_list = ['None']

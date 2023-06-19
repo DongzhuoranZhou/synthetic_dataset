@@ -234,12 +234,44 @@ if __name__ == '__main__':
     num_layers = '_3_22'
     dataset = 'syn4'
 
+
+
+    num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    root = 'logs/light_dataset/light_dataset/changingDepth/dataset_syn2/width_2/hdim16'
+    num_layers = '_4_32'
+    dataset = 'syn2'
+
+    num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    root = 'logs/light_dataset/light_dataset/fixedDepth/Depth16/dataset_syn2/width_2/hdim16'
+    num_layers = '_4_32'
+    dataset = 'syn2'
+
+    num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    root = 'logs/light_dataset/light_dataset/WONorm/changingDepth/dataset_syn4/width_1/hdim16'
+    num_layers = '_4_32'
+    dataset = 'syn4'
+
+    num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    root = 'logs/light_dataset/light_dataset/WONorm/changingDepth/dataset_syn4/width_2/hdim16'
+    num_layers = '_4_32'
+    dataset = 'syn4'
+
+    num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    root = 'logs/light_dataset/light_dataset/WONorm/fixedDepth/Depth4/dataset_syn4/width_2/hdim16'
+    num_layers = '_4_32'
+    dataset = 'syn4'
+
+    num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    root = 'logs/light_dataset/light_dataset/WONorm/fixedDepth/Depth16/dataset_syn4/width_1/hdim16'
+    num_layers = '_4_32'
+    dataset = 'syn4'
+
     #### hdim 16
     # GCN
-    # GCN_hdim16_acc_dict = torch.load(
-    #     '{}/Model_GCN_Norm_None_Trick_None/GCN{}layers_{}_summary.pt'.format(root, num_layers, dataset))
-    # GCN_hdim16_TrainTestDataContainer = plot_data_preprocess(GCN_hdim16_acc_dict, num_layers_lst,
-    #                                                          label='GCN_hdim{}'.format(hdim))
+    GCN_hdim16_acc_dict = torch.load(
+        '{}/Model_GCN_Norm_None_Trick_None/GCN{}layers_{}_summary.pt'.format(root, num_layers, dataset))
+    GCN_hdim16_TrainTestDataContainer = plot_data_preprocess(GCN_hdim16_acc_dict, num_layers_lst,
+                                                             label='GCN_hdim{}'.format(hdim))
     # GCN_hdim16_batch_acc_dict = torch.load(
     #     '{}/Model_GCN_Norm_batch_Trick_None/GCN{}layers_{}_summary.pt'.format(root, num_layers, dataset))
     # GCN_hdim16_batch_TrainTestDataContainer = plot_data_preprocess(GCN_hdim16_batch_acc_dict, num_layers_lst,
@@ -265,45 +297,53 @@ if __name__ == '__main__':
     GAT_hdim16_TrainTestDataContainer = plot_data_preprocess(GAT_hdim16_acc_dict, num_layers_lst,
                                                              label='GAT_hdim{}'.format(hdim))
 
-    GAT_hdim16_batch_acc_dict = torch.load(
-        '{}/Model_GAT_Norm_batch_Trick_None/GAT{}layers_{}_summary.pt'.format(root, num_layers, dataset))
-    GAT_hdim16_batch_TrainTestDataContainer = plot_data_preprocess(GAT_hdim16_batch_acc_dict, num_layers_lst,
-                                                                   label='GAT_hdim{}_batch'.format(hdim))
-    GAT_hdim16_pair_acc_dict = torch.load(
-        '{}/Model_GAT_Norm_pair_Trick_None/GAT{}layers_{}_summary.pt'.format(root, num_layers, dataset))
-    GAT_hdim16_pair_TrainTestDataContainer = plot_data_preprocess(GAT_hdim16_pair_acc_dict, num_layers_lst,
-                                                                  label='GAT_hdim{}_pair'.format(hdim))
+    # GAT_hdim16_batch_acc_dict = torch.load(
+    #     '{}/Model_GAT_Norm_batch_Trick_None/GAT{}layers_{}_summary.pt'.format(root, num_layers, dataset))
+    # GAT_hdim16_batch_TrainTestDataContainer = plot_data_preprocess(GAT_hdim16_batch_acc_dict, num_layers_lst,
+    #                                                                label='GAT_hdim{}_batch'.format(hdim))
+    # GAT_hdim16_pair_acc_dict = torch.load(
+    #     '{}/Model_GAT_Norm_pair_Trick_None/GAT{}layers_{}_summary.pt'.format(root, num_layers, dataset))
+    # GAT_hdim16_pair_TrainTestDataContainer = plot_data_preprocess(GAT_hdim16_pair_acc_dict, num_layers_lst,
+    #                                                               label='GAT_hdim{}_pair'.format(hdim))
+    # GAT_hdim16_group_acc_dict = torch.load(
+    #     '{}/Model_GAT_Norm_group_Trick_None/GAT{}layers_{}_summary.pt'.format(root, num_layers, dataset))
+    # GAT_hdim16_group_TrainTestDataContainer = plot_data_preprocess(GAT_hdim16_pair_acc_dict, num_layers_lst,
+    #                                                               label='GAT_hdim{}_pair'.format(hdim))
 
     # simpleGCN
-    simpleGCN_hdim16_acc_dict = torch.load(
-        '{}/Model_simpleGCN_Norm_None_Trick_None/simpleGCN{}layers_{}_summary.pt'.format(root,num_layers, dataset))
-    simpleGCN_hdim16_TrainTestDataContainer = plot_data_preprocess(simpleGCN_hdim16_acc_dict, num_layers_lst, label='simpleGCN_hdim{}'.format(hdim))
-    simpleGCN_hdim16_batch_acc_dict = torch.load(
-        '{}/Model_simpleGCN_Norm_batch_Trick_None/simpleGCN{}layers_{}_summary.pt'.format(root, num_layers, dataset))
-    simpleGCN_hdim16_batch_TrainTestDataContainer = plot_data_preprocess(simpleGCN_hdim16_batch_acc_dict,
-                                                                         num_layers_lst,
-                                                                         label='simpleGCN_hdim{}_batch'.format(hdim))
-    simpleGCN_hdim16_pair_acc_dict = torch.load(
-        '{}/Model_simpleGCN_Norm_pair_Trick_None/simpleGCN{}layers_{}_summary.pt'.format(root, num_layers, dataset))
-    simpleGCN_hdim16_pair_TrainTestDataContainer = plot_data_preprocess(simpleGCN_hdim16_pair_acc_dict, num_layers_lst,
-                                                                        label='simpleGCN_hdim{}_pair'.format(hdim))
-    simpleGCN_hdim16_group_acc_dict = torch.load(
-        '{}/Model_simpleGCN_Norm_group_Trick_None/simpleGCN{}layers_{}_summary.pt'.format(root,num_layers, dataset))
-    simpleGCN_hdim16_group_TrainTestDataContainer = plot_data_preprocess(simpleGCN_hdim16_group_acc_dict, num_layers_lst,
-                                                                    label='simpleGCN_hdim{}_ground'.format(hdim))
+    # simpleGCN_hdim16_acc_dict = torch.load(
+    #     '{}/Model_simpleGCN_Norm_None_Trick_None/simpleGCN{}layers_{}_summary.pt'.format(root,num_layers, dataset))
+    # simpleGCN_hdim16_TrainTestDataContainer = plot_data_preprocess(simpleGCN_hdim16_acc_dict, num_layers_lst, label='simpleGCN_hdim{}'.format(hdim))
+    # simpleGCN_hdim16_batch_acc_dict = torch.load(
+    #     '{}/Model_simpleGCN_Norm_batch_Trick_None/simpleGCN{}layers_{}_summary.pt'.format(root, num_layers, dataset))
+    # simpleGCN_hdim16_batch_TrainTestDataContainer = plot_data_preprocess(simpleGCN_hdim16_batch_acc_dict,
+    #                                                                      num_layers_lst,
+    #                                                                      label='simpleGCN_hdim{}_batch'.format(hdim))
+    # simpleGCN_hdim16_pair_acc_dict = torch.load(
+    #     '{}/Model_simpleGCN_Norm_pair_Trick_None/simpleGCN{}layers_{}_summary.pt'.format(root, num_layers, dataset))
+    # simpleGCN_hdim16_pair_TrainTestDataContainer = plot_data_preprocess(simpleGCN_hdim16_pair_acc_dict, num_layers_lst,
+    #                                                                     label='simpleGCN_hdim{}_pair'.format(hdim))
+    # simpleGCN_hdim16_group_acc_dict = torch.load(
+    #     '{}/Model_simpleGCN_Norm_group_Trick_None/simpleGCN{}layers_{}_summary.pt'.format(root,num_layers, dataset))
+    # simpleGCN_hdim16_group_TrainTestDataContainer = plot_data_preprocess(simpleGCN_hdim16_group_acc_dict, num_layers_lst,
+    #                                                                 label='simpleGCN_hdim{}_ground'.format(hdim))
 
     # SGC
     SGC_hdim16_acc_dict = torch.load(
         '{}/Model_SGC_Norm_None_Trick_None/SGC{}layers_{}_summary.pt'.format(root,num_layers, dataset))
     SGC_hdim16_TrainTestDataContainer = plot_data_preprocess(SGC_hdim16_acc_dict, num_layers_lst, label='SGC_hdim{}'.format(hdim))
-    #
+
     # SGC_hdim16_batch_acc_dict = torch.load(
-    #     '{}/Model_SGC_Norm_batch_Trick_None/SGC{}layers_{}_summary.pt'.format(root,num_layers))
+    #     '{}/Model_SGC_Norm_batch_Trick_None/SGC{}layers_{}_summary.pt'.format(root,num_layers, dataset))
     # SGC_hdim16_batch_TrainTestDataContainer = plot_data_preprocess(SGC_hdim16_batch_acc_dict, num_layers_lst,
     #                                                                     label='SGC_hdim{}_batch'.format(hdim))
     # SGC_hdim16_pair_acc_dict = torch.load(
-    #     '{}/Model_SGC_Norm_pair_Trick_None/SGC{}layers_{}_summary.pt'.format(root,num_layers))
+    #     '{}/Model_SGC_Norm_pair_Trick_None/SGC{}layers_{}_summary.pt'.format(root,num_layers, dataset))
     # SGC_hdim16_pair_TrainTestDataContainer = plot_data_preprocess(SGC_hdim16_pair_acc_dict, num_layers_lst,
+    #                                                                     label='SGC_hdim{}_pair'.format(hdim))
+    # SGC_hdim16_group_acc_dict = torch.load(
+    #     '{}/Model_SGC_Norm_group_Trick_None/SGC{}layers_{}_summary.pt'.format(root,num_layers, dataset))
+    # SGC_hdim16_group_TrainTestDataContainer = plot_data_preprocess(SGC_hdim16_pair_acc_dict, num_layers_lst,
     #                                                                     label='SGC_hdim{}_pair'.format(hdim))
 
     # other methods
@@ -335,11 +375,11 @@ if __name__ == '__main__':
     #                   simpleGCN_hdim16_TrainTestDataContainer]
     # list_container = [GCN_hdim16_TrainTestDataContainer, GAT_hdim16_TrainTestDataContainer, ]
     # list_container = [GCN_hdim16_TrainTestDataContainer, GCN_hdim16_batch_TrainTestDataContainer,GCN_hdim16_pair_TrainTestDataContainer,GCN_hdim16_residual_TrainTestDataContainer]
-    list_container = [GAT_hdim16_TrainTestDataContainer, GAT_hdim16_batch_TrainTestDataContainer,GAT_hdim16_pair_TrainTestDataContainer]
+    # list_container = [GAT_hdim16_TrainTestDataContainer, GAT_hdim16_batch_TrainTestDataContainer,GAT_hdim16_pair_TrainTestDataContainer,GAT_hdim16_group_TrainTestDataContainer]
     # list_container = [SGC_hdim16_TrainTestDataContainer, SGC_hdim16_batch_TrainTestDataContainer,SGC_hdim16_pair_TrainTestDataContainer]
     # list_container = [APPNP_hdim16_TrainTestDataContainer, DAGNN_hdim16_TrainTestDataContainer,GCNII_hdim16_TrainTestDataContainer,GPRGNN_hdim16_TrainTestDataContainer,JKNet_hdim16_TrainTestDataContainer]
-    # list_container = [APPNP_hdim16_TrainTestDataContainer, DAGNN_hdim16_TrainTestDataContainer,GCNII_hdim16_TrainTestDataContainer,GPRGNN_hdim16_TrainTestDataContainer,JKNet_hdim16_TrainTestDataContainer, GAT_hdim16_TrainTestDataContainer,
-    #                   SGC_hdim16_TrainTestDataContainer]
+    list_container = [APPNP_hdim16_TrainTestDataContainer, DAGNN_hdim16_TrainTestDataContainer,GCNII_hdim16_TrainTestDataContainer,GPRGNN_hdim16_TrainTestDataContainer,JKNet_hdim16_TrainTestDataContainer,GCN_hdim16_TrainTestDataContainer, GAT_hdim16_TrainTestDataContainer,
+                      SGC_hdim16_TrainTestDataContainer]
     # list_container = [GPRGNN_hdim16_TrainTestDataContainer]
     # list_container = [JKNet_hdim16_TrainTestDataContainer]
     # list_container = [GPRGNN_float64_hdim16_acc_dict, GPRGNN_hdim16_TrainTestDataContainer]
