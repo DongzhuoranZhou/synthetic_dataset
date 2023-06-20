@@ -151,19 +151,20 @@ if __name__ == "__main__":
     args = configs.arg_parse()
 
     # Combination of hyperparameters
-    type_models_list = ['GAT','simpleGCN','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN','GCN',]
+    # type_models_list = ['GAT','simpleGCN','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN','GCN',]
     # type_models_list = ['GPRGNN']
-    type_models_list = ['GCN']
+    # type_models_list = ['GCN']
     type_models_list = ['SGC']
     # type_models_list = ['JKNet']
     # type_models_list = ['GPRGNN']
-    type_models_list = ['DAGNN']
+    # type_models_list = ['DAGNN']
     # type_models_list = ['GPRGNN']
     # type_models_list = ['APPNP']
-    type_norm_list = ['pair', 'batch','group', 'None']
+    # type_norm_list = ['pair', 'batch','group', 'None']
+    type_norm_list = ['group']
     # type_norm_list = ['group', 'None']
-    type_norm_list = ['None']
-    type_trick_list = ['Residual', 'None']
+    # type_norm_list = ['None']
+    # type_trick_list = ['Residual', 'None']
     type_trick_list = ['None']
     # type_models_list = ['simpleGCN']
     # type_norm_list = ['GPRGNN']
@@ -185,7 +186,7 @@ if __name__ == "__main__":
                     'type_norm': norm_type,
                     'type_trick': trick_type
                 }
-                if norm_type != 'None' and model_type not in ['GCN', 'GAT', 'simpleGCN']:
+                if norm_type != 'None' and model_type not in ['GCN', 'GAT', 'SGC', 'simpleGCN', 'JKNet', 'DAGNN', 'GPRGNN']:
                     continue
                 # if trick_type != 'None' and norm_type != 'None' and model_type != 'GCN':
                 #     continue

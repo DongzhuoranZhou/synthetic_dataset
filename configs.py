@@ -22,7 +22,7 @@ def reset_dataset_dependent_parameters(args):
         args.weight_decay = 5e-4
         args.epochs = 1000
         args.patience = 200  # 100
-        args.dim_hidden = 64
+        args.dim_hidden = 16
         args.activation = 'relu'
         # args.num_layers = 2
     if args.dataset == 'syn4':

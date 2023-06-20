@@ -63,7 +63,9 @@ class SGConv(MessagePassing):
                  lin_first: bool = False, **kwargs):
         kwargs.setdefault('aggr', 'add')
         super(SGConv, self).__init__(**kwargs)
-
+        args = kwargs['args']
+        for k, v in vars(args).items():
+            setattr(self, k, v)
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.K = K
@@ -91,7 +93,7 @@ class SGConv(MessagePassing):
                 self.layers_bn.append(pair_norm())
         if self.gn:
             for k in range(self.K):
-                self.layers_bn.append(batch_norm(self.dim_hidden, self.type_norm, self.num_groups, self.skip_weight))
+                self.layers_bn.append(batch_norm(self.in_channels, self.type_norm, self.num_groups, self.skip_weight))
         if self.lin_first:
             self.cached = False
         self.cached = False
