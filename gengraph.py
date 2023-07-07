@@ -314,10 +314,11 @@ if __name__ == "__main__":
     # plt.show()
     depth_list = [6, 8, 10, 12, 14, 16, 18, 20]
     depth_list = [11, 13, 15, 22, 24, 26, 28, 30]
-    depth_list = [4]
+    depth_list = [16]
+    depth_list = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     # depth_list = [7,9,]
     # depth_list = [18, 20, 22, 24, 26, 28, 30]
-    dataset_to_generate = "syn4"
+    dataset_to_generate = "syn2"
 
     if dataset_to_generate == "syn4":
         gen_function = "gen_syn4"
@@ -327,9 +328,9 @@ if __name__ == "__main__":
         gen_function = getattr(importlib.import_module("gengraph"), gen_function)
     for depth in depth_list:
         embedding_dim = 16
-        num_pairs = 1000
+        num_pairs = 1
         # depth = 4
-        width = 2
+        width = 4
         high_gap = True
         # G_list = gen_syn1(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,
         #                         max_nodes=50)
@@ -338,14 +339,14 @@ if __name__ == "__main__":
                               max_width=width,
                               max_nodes=100000000, num_pairs=num_pairs, high_gap=high_gap)
 
-        # nx.draw(G_list[0][0], with_labels=True)
-        # plt.show()
-        # nx.draw(G_list[0][1], with_labels=True)
-        # plt.show()
-        # for tup in G_list:
-        #     (T1, T2)= tup
-        #     G_list.append(T1)
-        #     G_list.append(T2)
+        nx.draw(G_list[0][0], with_labels=True)
+        plt.show()
+        nx.draw(G_list[0][1], with_labels=True)
+        plt.show()
+        for tup in G_list:
+            (T1, T2)= tup
+            G_list.append(T1)
+            G_list.append(T2)
         G_list = [T for tup in G_list for T in tup]
 
         # for G in G_list:

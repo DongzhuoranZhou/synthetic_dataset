@@ -3,7 +3,7 @@ import torch.nn.functional as F
 
 
 class batch_norm(torch.nn.Module):
-    def __init__(self, dim_hidden, type_norm, num_groups=1,
+    def __init__(self, dim_hidden, type_norm, num_groups=10,
                  skip_weight=0.005):
         super(batch_norm, self).__init__()
         self.type_norm = type_norm

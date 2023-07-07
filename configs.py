@@ -22,7 +22,7 @@ def reset_dataset_dependent_parameters(args):
         args.weight_decay = 5e-4
         args.epochs = 1000
         args.patience = 200  # 100
-        args.dim_hidden = 16
+        args.dim_hidden = 64
         args.activation = 'relu'
         # args.num_layers = 2
     if args.dataset == 'syn4':
@@ -33,7 +33,7 @@ def reset_dataset_dependent_parameters(args):
         args.weight_decay = 5e-4
         args.epochs = 1000
         args.patience = 200  # 100
-        args.dim_hidden = 64
+        args.dim_hidden = 16
         args.activation = 'relu'
         # args.num_layers = 2
     if args.dataset == 'Cora':
@@ -142,7 +142,7 @@ def arg_parse():
 
     parser.add_argument('--node_norm_type', type=str, default="n", choices=['n', 'v', 'm', 'srv', 'pr'])
     parser.add_argument('--skip_weight', type=float, default=0.005)
-    parser.add_argument('--num_groups', type=int, default=1)
+    parser.add_argument('--num_groups', type=int, default=10)
     parser.add_argument('--has_residual_MLP', type=bool, default=False)
 
     # Hyperparameters for random dropout

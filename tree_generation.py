@@ -29,20 +29,21 @@ def T1_generation(height, max_nodes, max_witdh=3,start=0,save_path=None):
         # print("current_depth", current_depth)
         # print("leaves_nodes", potential_target_nodes)
         higher_than_max_witdh = True
+        last_num_nodes = 20
         while higher_than_max_witdh:
             # target_node = random.sample(potential_target_nodes, 1)[0]
             # current_in_degree = T1.in_degree(target_node)
             # print("current_in_degree", current_in_degree)
             # option 2: if the branch of node is higher, the probability of adding a new node is higher
             # norm = np.linalg.norm(current_depth_for_each_node)
-            array_sum = np.sum(current_depth_for_each_node[-max(10,int(current_depth_for_each_node.shape[0]/5)):])
-            probabilities_to_sample = list(current_depth_for_each_node)[-max(10,int(len(potential_target_nodes)/5)):] / array_sum
+            array_sum = np.sum(current_depth_for_each_node[-max(last_num_nodes,int(current_depth_for_each_node.shape[0]/5)):])
+            probabilities_to_sample = list(current_depth_for_each_node)[-max(last_num_nodes,int(len(potential_target_nodes)/5)):] / array_sum
             # probabilities_to_sample[-1] = 1 - sum(probabilities_to_sample[:-1])
             # print("probabilities_to_sample", probabilities_to_sample)
             # print("potential_target_nodes", potential_target_nodes)
             # print("probabilities_to_sample", probabilities_to_sample)
             # print("potential_target_nodes", potential_target_nodes[-max(10,int(len(potential_target_nodes)/5)):])
-            target_node = np.random.choice(potential_target_nodes[-max(10,int(len(potential_target_nodes)/5)):], p=probabilities_to_sample)
+            target_node = np.random.choice(potential_target_nodes[-max(last_num_nodes,int(len(potential_target_nodes)/5)):], p=probabilities_to_sample)
             current_in_degree = T1.in_degree(target_node)
             # if current_in_degree + 1 < max_witdh:
             #     higher_than_max_witdh = False
@@ -51,7 +52,7 @@ def T1_generation(height, max_nodes, max_witdh=3,start=0,save_path=None):
         # print("sampled leaf_node", target_node)
 
         # Option 1 how to decide branch
-        Y = np.random.poisson(1)
+        # Y = np.random.poisson(1)
         # Option 2 how to decide branch
         # Y = np.floor(np.random.poisson(1)/(height+1))
         if max_witdh == 1:
@@ -65,7 +66,10 @@ def T1_generation(height, max_nodes, max_witdh=3,start=0,save_path=None):
             values = [1, 2,3]
             Y = np.random.choice(values, p=probabilities)
         # Y = 1
-
+        if max_witdh == 4:
+            probabilities = [0.1, 0.1,0.1,0.7]
+            values = [1, 2,3,4]
+            Y = np.random.choice(values, p=probabilities)
         # print("Y", Y,'current_depth',current_depth)
         if Y:  # Y == 0:
             for i in range(min(Y+1,max_witdh)):

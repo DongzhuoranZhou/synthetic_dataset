@@ -91,7 +91,7 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
     sh.setFormatter(formatter)
     logger.addHandler(sh)
 
-    width = 2
+    width = 1
     logging.basicConfig(level=logging.INFO,
                         )
     args.logdir = '{}/dataset_{}/width_{}/hdim{}/Model_{}_Norm_{}_Trick_{}'.format(logdir_root,args.dataset,width,str(args.num_feats),
@@ -107,8 +107,8 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
     logfilename = "{}/{}_{}layers_{}_summary.log".format(args.logdir, args.type_model,
                                                          "_".join([str(num_layers_lst[0]), str(num_layers_lst[-1])]),
                                                          args.dataset)
-    logging.info("logfilename:", logfilename)
-    print("logfilename:", logfilename)
+    # logging.info("logfilename:", str(logfilename))
+    # print("logfilename:", logfilename)
 
     if not exists(args.logdir):
         os.makedirs(args.logdir)
@@ -151,17 +151,17 @@ if __name__ == "__main__":
     args = configs.arg_parse()
 
     # Combination of hyperparameters
-    # type_models_list = ['GAT','simpleGCN','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN','GCN',]
+    type_models_list = ['GAT','simpleGCN','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN','GCN',]
     # type_models_list = ['GPRGNN']
-    # type_models_list = ['GCN']
-    type_models_list = ['SGC']
+    type_models_list = ['GCN']
+    # type_models_list = ['SGC']
     # type_models_list = ['JKNet']
     # type_models_list = ['GPRGNN']
     # type_models_list = ['DAGNN']
     # type_models_list = ['GPRGNN']
     # type_models_list = ['APPNP']
-    # type_norm_list = ['pair', 'batch','group', 'None']
-    type_norm_list = ['group']
+    type_norm_list = ['pair', 'batch','group', 'None']
+    # type_norm_list = ['group']
     # type_norm_list = ['group', 'None']
     # type_norm_list = ['None']
     # type_trick_list = ['Residual', 'None']
@@ -172,6 +172,8 @@ if __name__ == "__main__":
     # type_trick_list = ['None']
     num_layers_lst = [3,4,6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    # num_layers_lst = [20]
+    # num_layers_lst = [14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     # num_layers_lst = [4]
     # num_layers_lst = [11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     # num_layers_lst = [4,6]
