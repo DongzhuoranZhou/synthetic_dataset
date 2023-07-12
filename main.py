@@ -94,7 +94,7 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
     width = 1
     logging.basicConfig(level=logging.INFO,
                         )
-    args.logdir = '{}/dataset_{}/width_{}/hdim{}/Model_{}_Norm_{}_Trick_{}'.format(logdir_root,args.dataset,width,str(args.num_feats),
+    args.logdir = '{}/dataset_{}/width_{}/hdim{}/direction_{}/Model_{}_Norm_{}_Trick_{}'.format(logdir_root,args.dataset,width,str(args.num_feats),args.direction,
                                                                             args.type_model, str(
                                                                                 args.type_norm),str(args.type_trick))
 
