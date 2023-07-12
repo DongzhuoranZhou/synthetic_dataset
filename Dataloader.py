@@ -7,9 +7,9 @@ import torch_geometric.transforms as T
 from ogb.nodeproppred import PygNodePropPredDataset
 from torch_geometric.datasets import Planetoid, Coauthor, WebKB, Actor, Amazon
 from torch_geometric.utils import remove_self_loops, add_self_loops, to_undirected, to_networkx
-from torch_geometric.utils import from_networkx
+# from torch_geometric.utils import from_networkx
 from collections import defaultdict
-
+from utils.convert import from_networkx
 def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32",direction="directed"):
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', dataset)
 
@@ -43,7 +43,7 @@ def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32"
         #     for key, value in feat_dict.items():
         #         data[str(key)].append(value)
         data = from_networkx(G)
-        data.x = data.x.to(torch.float64)
+        # data.x = data.x.to(torch.float64)
         if precisition == "float32":
             data.x = data.x.to(torch.float32)
         elif precisition == "float64":

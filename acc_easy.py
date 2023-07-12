@@ -593,10 +593,10 @@ if __name__ == '__main__':
     list_container = [GCN_hdim16_TrainTestDataContainer,GCN_hdim16_batch_TrainTestDataContainer,GCN_hdim16_pair_TrainTestDataContainer,GCN_hdim16_group_TrainTestDataContainer]
     # list_container = [GCN_hdim16_TrainTestDataContainer,GCN_hdim16_pair_TrainTestDataContainer,GCN_hdim16_residual_TrainTestDataContainer]
 
-    list_container = [GAT_hdim16_TrainTestDataContainer, GAT_hdim16_batch_TrainTestDataContainer,GAT_hdim16_pair_TrainTestDataContainer]
+    # list_container = [GAT_hdim16_TrainTestDataContainer, GAT_hdim16_batch_TrainTestDataContainer,GAT_hdim16_pair_TrainTestDataContainer]
     # list_container = [GAT_hdim16_TrainTestDataContainer, GAT_hdim16_batch_TrainTestDataContainer,GAT_hdim16_pair_TrainTestDataContainer,]
 
-    # list_container = [SGC_hdim16_pair_TrainTestDataContainer,SGC_hdim16_TrainTestDataContainer,SGC_hdim16_group_TrainTestDataContainer,SGC_hdim16_batch_TrainTestDataContainer]
+    list_container = [SGC_hdim16_pair_TrainTestDataContainer,SGC_hdim16_TrainTestDataContainer,SGC_hdim16_group_TrainTestDataContainer,SGC_hdim16_batch_TrainTestDataContainer]
 
 
     # list_container = [GCN_hdim16_TrainTestDataContainer, GAT_hdim16_TrainTestDataContainer,simpleGCN_hdim16_batch_TrainTestDataContainer,simpleGCN_hdim16_pair_TrainTestDataContainer,SGC_hdim16_TrainTestDataContainer,SGC_hdim16_batch_TrainTestDataContainer,SGC_hdim16_pair_TrainTestDataContainer]

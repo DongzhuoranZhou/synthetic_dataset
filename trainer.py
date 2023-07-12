@@ -23,7 +23,9 @@ class trainer(object):
         self.device = torch.device(f'cuda:{args.cuda_num}' if args.cuda else 'cpu')
         self.which_run = which_run
 
-        self.data = load_data(dataset=self.dataset, type_split=self.type_split,dataset_name=self.dataset_name,precisition=self.precision)
+        # self.data = load_data(dataset=self.dataset, type_split=self.type_split,dataset_name=self.dataset_name,precisition=self.precision)
+        self.data = load_data(dataset=self.dataset, type_split=self.type_split,dataset_name=self.dataset_name,precisition=self.precision,direction=self.direction)
+
         self.loss_fn = torch.nn.functional.nll_loss
         self.data.to(self.device)
 

@@ -117,6 +117,10 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
 
         dataset_name = "dataset/{}/width_{}/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_True.pt".format(args.dataset,width,num_pairs,16,width,
                                                                                           num_feature)
+
+
+        # dataset_name = "dataset/{}/width_{}/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_True_backup.pt".format(args.dataset,width,num_pairs,16,width,
+        #                                                                                   num_feature)
         args.num_layers = num_layers
         args.dataset_name = dataset_name
         mean_train_acc, std_train_acc, mean_test_acc, std_test_acc = main(args)
@@ -161,6 +165,8 @@ if __name__ == "__main__":
     # type_models_list = ['GPRGNN']
     # type_models_list = ['APPNP']
     type_norm_list = ['pair', 'None','group', 'batch',]
+    type_norm_list = ['pair']
+
     # type_norm_list = ['group']
     # type_norm_list = ['group', 'None']
     # type_norm_list = ['None']
@@ -173,7 +179,7 @@ if __name__ == "__main__":
     num_layers_lst = [3,4,6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     num_layers_lst   = [24]
-    num_layers_lst = list(range(15, 33, 2))
+    # num_layers_lst = list(range(15, 33, 2))
     # num_layers_lst = [20]
     # num_layers_lst = [14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     # num_layers_lst = [4]

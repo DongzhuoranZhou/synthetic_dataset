@@ -226,7 +226,7 @@ def gen_syn1(height=8, feature_generator=None, max_width=2, max_nodes=20, embedd
         if T2.nodes[node]["x"][0] >= 1:
             T2.nodes[node]["x"][0] = np.random.uniform(T2_lower_limit,
                                                        T2_upper_limit)  # TODO: change to a random number smaller than 1
-            # T2.nodes[node]["feat"][0] = 1 - (T2.nodes[node]["feat"][0] - 1)
+                # T2.nodes[node]["feat"][0] = 1 - (T2.nodes[node]["feat"][0] - 1)
 
     for node in l_depth_nodes:
         T1.nodes[node]["y"] = np.array([-2], dtype=int)[0]
@@ -318,6 +318,7 @@ if __name__ == "__main__":
     depth_list = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     # depth_list = [7,9,]
     # depth_list = [18, 20, 22, 24, 26, 28, 30]
+    depth_list = [16]
     dataset_to_generate = "syn2"
 
     if dataset_to_generate == "syn4":
@@ -328,9 +329,9 @@ if __name__ == "__main__":
         gen_function = getattr(importlib.import_module("gengraph"), gen_function)
     for depth in depth_list:
         embedding_dim = 16
-        num_pairs = 1
+        num_pairs = 10
         # depth = 4
-        width = 4
+        width = 1
         high_gap = True
         # G_list = gen_syn1(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,
         #                         max_nodes=50)
@@ -343,10 +344,17 @@ if __name__ == "__main__":
         plt.show()
         nx.draw(G_list[0][1], with_labels=True)
         plt.show()
-        for tup in G_list:
-            (T1, T2)= tup
-            G_list.append(T1)
-            G_list.append(T2)
+        # G_list_elements = []
+        # for tup in G_list:
+        #     try:
+        #         (T1, T2)= tup
+        #         G_list_elements.append(T1)
+        #         G_list_elements.append(T2)
+        #     except:
+        #         pass
+            # (T1, T2)= tup
+            # G_list.append(T1)
+            # G_list.append(T2)
         G_list = [T for tup in G_list for T in tup]
 
         # for G in G_list:
@@ -368,7 +376,7 @@ if __name__ == "__main__":
         #         data[str(key)].append(value)
 
         G = nx.disjoint_union_all(G_list)
-        G = G.to_undirected()
+        # G = G.to_undirected()
         root_dir = "dataset/{}/width_{}".format(dataset_to_generate, width)
         if not exists(root_dir):
             os.makedirs(root_dir)
