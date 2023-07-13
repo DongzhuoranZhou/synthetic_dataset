@@ -69,8 +69,8 @@ def arg_parse():
 
     parser.set_defaults(
                         logdir='log',
-                        input_dim=10,
-                        hidden_dim=20,
+                        # input_dim=10,
+                        # hidden_dim=20,
                         num_classes=2,
                         )
 
@@ -142,9 +142,9 @@ def arg_parse():
 
     parser.add_argument('--node_norm_type', type=str, default="n", choices=['n', 'v', 'm', 'srv', 'pr'])
     parser.add_argument('--skip_weight', type=float, default=0.005)
-    parser.add_argument('--num_groups', type=int, default=10)
+    parser.add_argument('--num_groups', type=int, default=1)
     parser.add_argument('--has_residual_MLP', type=bool, default=False)
-
+    parser.add_argument("--noise", type=str_to_bool,default=False,help="if add noise to the input features and labels")
     # Hyperparameters for random dropout
     parser.add_argument('--precision', type=str, default="float32",choices=['float32', 'float16', 'float64'])
     parser.add_argument('--graph_dropout', type=float, default=0.2,

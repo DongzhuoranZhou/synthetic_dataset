@@ -10,7 +10,7 @@ from torch_geometric.utils import remove_self_loops, add_self_loops, to_undirect
 # from torch_geometric.utils import from_networkx
 from collections import defaultdict
 from utils.convert import from_networkx
-def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32",direction="directed"):
+def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32",direction="directed",noise = True):
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', dataset)
 
     if dataset in ["Cora", "Citeseer", "Pubmed"]:
@@ -53,6 +53,29 @@ def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32"
         # data.x = data.x.to(torch.float32)
         data.num_classes = int(max(data.y) + 1)
         data.G_index = G_index
+
+        # TODO add two types of noise. Fiirst for data.x choose 10% of the nodes and add noise to them. Second for data.y choose 2% of them and flip.
+        # TODO add noise to data.x
+        if noise:
+            embedding_noise = True # No big effect, acc keep 1
+            label_noise = True # Has effect, acc from 1 to 0.99
+        else:
+            embedding_noise = False
+            label_noise = False
+        if embedding_noise:
+            nodex_random_indices = np.random.choice(data.x.size(0), int(data.x.size(0) * 0.1), replace=False)
+            data.x[nodex_random_indices] = torch.rand(data.x[nodex_random_indices].size()) + data.x[nodex_random_indices]
+        # TODO add noise to data.y
+        if label_noise:
+            # sample_root_indices = np.array(data.y)
+            data.y = np.array(data.y)
+            positive_indices = np.where(np.array(data.y) == 1)[0]
+            ramdom_positive_indices = np.random.choice(positive_indices, int(positive_indices.size * 0.1), replace=False)
+            data.y[ramdom_positive_indices] = 0
+            negative_indices = np.where(np.array(data.y) == 0)[0]
+            ramdom_negative_indices = np.random.choice(negative_indices, int(negative_indices.size * 0.1), replace=False)
+            data.y[ramdom_negative_indices] = 1
+            data.y = torch.from_numpy(data.y)
         data = change_split(data, dataset, type_split=type_split)
     else:
         raise Exception(f'the dataset of {dataset} has not been implemented')

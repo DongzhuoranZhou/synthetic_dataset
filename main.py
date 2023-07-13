@@ -155,9 +155,9 @@ if __name__ == "__main__":
     args = configs.arg_parse()
 
     # Combination of hyperparameters
-    type_models_list = ['GAT','simpleGCN','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN','GCN',]
+    type_models_list = ['GAT','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN','GCN',]
     # type_models_list = ['GPRGNN']
-    type_models_list = ['GCN']
+    type_models_list = ['GAT']
     # type_models_list = ['SGC']
     # type_models_list = ['JKNet']
     # type_models_list = ['GPRGNN']
@@ -196,7 +196,7 @@ if __name__ == "__main__":
                     'type_norm': norm_type,
                     'type_trick': trick_type
                 }
-                if norm_type != 'None' and model_type not in ['GCN', 'GAT', 'SGC', 'simpleGCN', 'JKNet', 'DAGNN', 'GPRGNN']:
+                if norm_type != 'None' and model_type not in ['GCN', 'GAT', 'SGC']:
                     continue
                 # if trick_type != 'None' and norm_type != 'None' and model_type != 'GCN':
                 #     continue

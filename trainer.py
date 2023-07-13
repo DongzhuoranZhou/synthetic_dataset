@@ -24,7 +24,7 @@ class trainer(object):
         self.which_run = which_run
 
         # self.data = load_data(dataset=self.dataset, type_split=self.type_split,dataset_name=self.dataset_name,precisition=self.precision)
-        self.data = load_data(dataset=self.dataset, type_split=self.type_split,dataset_name=self.dataset_name,precisition=self.precision,direction=self.direction)
+        self.data = load_data(dataset=self.dataset, type_split=self.type_split,dataset_name=self.dataset_name,precisition=self.precision,direction=self.direction,noise=self.noise)
 
         self.loss_fn = torch.nn.functional.nll_loss
         self.data.to(self.device)

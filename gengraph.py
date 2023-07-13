@@ -329,9 +329,9 @@ if __name__ == "__main__":
         gen_function = getattr(importlib.import_module("gengraph"), gen_function)
     for depth in depth_list:
         embedding_dim = 16
-        num_pairs = 10
+        num_pairs = 1000
         # depth = 4
-        width = 1
+        width = 2
         high_gap = True
         # G_list = gen_syn1(height=3, feature_generator=featgen.GaussianFeatureGen(embedding_dim=16), max_width=2,
         #                         max_nodes=50)
@@ -340,10 +340,10 @@ if __name__ == "__main__":
                               max_width=width,
                               max_nodes=100000000, num_pairs=num_pairs, high_gap=high_gap)
 
-        nx.draw(G_list[0][0], with_labels=True)
-        plt.show()
-        nx.draw(G_list[0][1], with_labels=True)
-        plt.show()
+        # nx.draw(G_list[0][0], with_labels=True)
+        # plt.show()
+        # nx.draw(G_list[0][1], with_labels=True)
+        # plt.show()
         # G_list_elements = []
         # for tup in G_list:
         #     try:
