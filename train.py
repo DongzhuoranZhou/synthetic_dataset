@@ -5,7 +5,7 @@ import os
 import gengraph
 import utils.featgen as featgen
 import numpy as np
-from models.GCN import GCN
+from models.GCN_ACM import GCN
 import importlib
 import torch
 import time
@@ -66,6 +66,7 @@ def train_node_classifier(G, labels, args, writer=None):
     )
     model.train()
     ypred = None
+    # model.reset_parameters()
     for epoch in range(args.epochs):
         begin_time = time.time()
         model.zero_grad()

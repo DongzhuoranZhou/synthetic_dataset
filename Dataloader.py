@@ -10,6 +10,7 @@ from torch_geometric.utils import remove_self_loops, add_self_loops, to_undirect
 # from torch_geometric.utils import from_networkx
 from collections import defaultdict
 from utils.convert import from_networkx
+import copy
 def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32",direction="directed",noise = True):
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', dataset)
 
@@ -62,21 +63,34 @@ def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32"
         else:
             embedding_noise = False
             label_noise = False
-        if embedding_noise:
-            nodex_random_indices = np.random.choice(data.x.size(0), int(data.x.size(0) * 0.1), replace=False)
-            data.x[nodex_random_indices] = torch.rand(data.x[nodex_random_indices].size()) + data.x[nodex_random_indices]
+
         # TODO add noise to data.y
+
+        data = change_split(data, dataset, type_split=type_split)
+        data.y_original = copy.deepcopy(data.y)
+        if embedding_noise:
+            # nodex_random_indices = np.random.choice(data.x[data.train_mask], int(data.x.size(0) * 0.1), replace=False)
+            train_indices = np.where(data.train_mask)[0]
+            num_samples = int(len(train_indices) * 0.1)
+            random_indices = np.random.choice(train_indices, num_samples, replace=False)
+            data.x[random_indices] = torch.rand(data.x[random_indices].size()) + data.x[random_indices]
         if label_noise:
             # sample_root_indices = np.array(data.y)
+            # data.y_original = copy.deepcopy(data.y)
+            noise_rate = 0.1
+            train_indices = np.where(data.train_mask)[0]
             data.y = np.array(data.y)
-            positive_indices = np.where(np.array(data.y) == 1)[0]
-            ramdom_positive_indices = np.random.choice(positive_indices, int(positive_indices.size * 0.1), replace=False)
+            # num_samples = int(len(train_indices) * 0.02)
+            positive_indices = np.where(data.y[train_indices] == 1)[0] # TODO bug
+            ramdom_positive_indices = np.random.choice(train_indices[positive_indices], int(positive_indices.size * noise_rate), replace=False)
+
+
+            negative_indices = np.where(data.y[train_indices] == 0)[0]
+            ramdom_negative_indices = np.random.choice(train_indices[negative_indices], int(negative_indices.size * noise_rate), replace=False)
+
             data.y[ramdom_positive_indices] = 0
-            negative_indices = np.where(np.array(data.y) == 0)[0]
-            ramdom_negative_indices = np.random.choice(negative_indices, int(negative_indices.size * 0.1), replace=False)
             data.y[ramdom_negative_indices] = 1
             data.y = torch.from_numpy(data.y)
-        data = change_split(data, dataset, type_split=type_split)
     else:
         raise Exception(f'the dataset of {dataset} has not been implemented')
     num_nodes = data.x.size(0)
@@ -185,5 +199,8 @@ def random_coauthor_amazon_splits(data, split_rate=[0.6, 0.2, 0.2],type_split="p
     data.train_mask = index_to_mask(train_index, size=data.num_nodes)
     data.val_mask = index_to_mask(val_index, size=data.num_nodes)
     data.test_mask = index_to_mask(test_index, size=data.num_nodes)
+    data.train_index = train_index
+    data.val_index = val_index
+    data.test_index = test_index
 
     return data

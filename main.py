@@ -115,7 +115,7 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
 
     for num_layers in num_layers_lst:
 
-        dataset_name = "dataset/{}/width_{}/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_True.pt".format(args.dataset,width,num_pairs,16,width,
+        dataset_name = "dataset/{}/width_{}/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_True.pt".format(args.dataset,width,num_pairs,num_layers,width,
                                                                                           num_feature)
 
 
@@ -155,17 +155,22 @@ if __name__ == "__main__":
     args = configs.arg_parse()
 
     # Combination of hyperparameters
-    type_models_list = ['GAT','SGC','GCNII','APPNP','DAGNN','JKNet','GPRGNN','GCN',]
+    type_models_list = ['GCNII','APPNP','DAGNN','JKNet','GPRGNN','GCN','GAT','SGC',]
+    type_models_list = ["G2_GNN"]
+    type_models_list = ["GCN"]
+    type_models_list = ["GAT"]
+    # type_models_list = ["SAGE"]
+    # type_models_list = ["GAT"]
     # type_models_list = ['GPRGNN']
-    type_models_list = ['GAT']
+    # type_models_list = ['GAT']
     # type_models_list = ['SGC']
     # type_models_list = ['JKNet']
     # type_models_list = ['GPRGNN']
     # type_models_list = ['DAGNN']
     # type_models_list = ['GPRGNN']
     # type_models_list = ['APPNP']
-    type_norm_list = ['pair', 'None','group', 'batch',]
-    type_norm_list = ['pair']
+    # type_norm_list = ['pair', 'None', 'batch','group',]
+    type_norm_list = ['batch']
 
     # type_norm_list = ['group']
     # type_norm_list = ['group', 'None']
@@ -176,13 +181,14 @@ if __name__ == "__main__":
     # type_norm_list = ['GPRGNN']
     # type_norm_list = ['None']
     # type_trick_list = ['None']
-    num_layers_lst = [3,4,6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
-    num_layers_lst = [4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
-    num_layers_lst   = [24]
+    # num_layers_lst = [3,4,6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    num_layers_lst = [3, 4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
+    num_layers_lst = [4]
+    # num_layers_lst   = [24]
     # num_layers_lst = list(range(15, 33, 2))
     # num_layers_lst = [20]
     # num_layers_lst = [14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
-    # num_layers_lst = [4]
+    # num_layers_lst = [10]
     # num_layers_lst = [11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     # num_layers_lst = [4,6]
     # num_layers_lst = [4, 6]

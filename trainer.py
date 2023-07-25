@@ -96,8 +96,8 @@ class trainer(object):
                 logging.info('Early stopping!')
                 break
 
-        logging.info('train_loss: {:.9f}, val_acc: {:.9f}, test_acc:{:.9f}'
-              .format(best_train_loss, best_val_acc, best_test_acc))
+        logging.info('train_loss: {:.9f}, val_loss: {:.9f}, val_acc: {:.9f}, test_acc:{:.9f}'
+              .format(best_train_loss, best_val_loss, best_val_acc, best_test_acc))
         return best_train_loss, best_val_acc, best_test_acc, best_train_acc
 
     def train_net(self):
@@ -137,31 +137,34 @@ class trainer(object):
     def run_testSet(self):
         self.model.eval()
         # torch.cuda.empty_cache()
-        if self.dataset == 'ogbn-arxiv':
-            out = self.model(self.data.x, self.data.edge_index)
-            out = F.log_softmax(out, 1)
-            y_pred = out.argmax(dim=-1, keepdim=True)
+        # if self.dataset == 'ogbn-arxiv':
+        #     out = self.model(self.data.x, self.data.edge_index)
+        #     out = F.log_softmax(out, 1)
+        #     y_pred = out.argmax(dim=-1, keepdim=True)
+        #
+        #     train_acc = self.evaluator.eval({
+        #         'y_true': self.data.y[self.split_idx['train']],
+        #         'y_pred': y_pred[self.split_idx['train']],
+        #     })['acc']
+        #     valid_acc = self.evaluator.eval({
+        #         'y_true': self.data.y[self.split_idx['valid']],
+        #         'y_pred': y_pred[self.split_idx['valid']],
+        #     })['acc']
+        #     test_acc = self.evaluator.eval({
+        #         'y_true': self.data.y[self.split_idx['test']],
+        #         'y_pred': y_pred[self.split_idx['test']],
+        #     })['acc']
+        #
+        #     return train_acc, valid_acc, test_acc, 0.
 
-            train_acc = self.evaluator.eval({
-                'y_true': self.data.y[self.split_idx['train']],
-                'y_pred': y_pred[self.split_idx['train']],
-            })['acc']
-            valid_acc = self.evaluator.eval({
-                'y_true': self.data.y[self.split_idx['valid']],
-                'y_pred': y_pred[self.split_idx['valid']],
-            })['acc']
-            test_acc = self.evaluator.eval({
-                'y_true': self.data.y[self.split_idx['test']],
-                'y_pred': y_pred[self.split_idx['test']],
-            })['acc']
-
-            return train_acc, valid_acc, test_acc, 0.
-
-        else:
-            logits = self.model(self.data.x, self.data.edge_index)
-            logits = F.log_softmax(logits, 1)
-            acc_train = evaluate(logits, self.data.y, self.data.train_mask)
-            acc_val = evaluate(logits, self.data.y, self.data.val_mask)
-            acc_test = evaluate(logits, self.data.y, self.data.test_mask)
-            val_loss = self.loss_fn(logits[self.data.val_mask], self.data.y[self.data.val_mask])
-            return acc_train, acc_val, acc_test, val_loss
+        # else:
+        logits = self.model(self.data.x, self.data.edge_index)
+        logits = F.log_softmax(logits, 1)
+        # acc_train = evaluate(logits, self.data.y, self.data.train_mask)
+        # acc_val = evaluate(logits, self.data.y, self.data.val_mask)
+        # acc_test = evaluate(logits, self.data.y, self.data.test_mask)
+        acc_train = evaluate(logits, self.data.y_original, self.data.train_mask)
+        acc_val = evaluate(logits, self.data.y_original, self.data.val_mask)
+        acc_test = evaluate(logits, self.data.y_original, self.data.test_mask)
+        val_loss = self.loss_fn(logits[self.data.val_mask], self.data.y[self.data.val_mask])
+        return acc_train, acc_val, acc_test, val_loss

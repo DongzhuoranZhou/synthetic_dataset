@@ -18,10 +18,10 @@ def reset_dataset_dependent_parameters(args):
         args.num_feats =16
         args.num_classes = 2
         args.dropout = 0.5  # 0.5
-        args.lr = 0.005  # 0.005
+        args.lr = 0.008  # 0.005 0.008
         args.weight_decay = 5e-4
         args.epochs = 1000
-        args.patience = 200  # 100
+        args.patience = 200  # 100, 200
         args.dim_hidden = 16
         args.activation = 'relu'
         # args.num_layers = 2
@@ -101,7 +101,7 @@ def arg_parse():
                         help="0: test tricks, 1: test models")
 
     parser.add_argument('--type_model', type=str, default="GCN",
-                        choices=['GCN', 'GAT', 'SGC', 'GCNII', 'DAGNN', 'GPRGNN', 'APPNP', 'JKNet', 'DeeperGCN',"EdgeDrop",'simpleGCN'])
+                        choices=['GCN', 'GAT', 'SGC', 'GCNII', 'DAGNN', 'GPRGNN', 'APPNP', 'JKNet', 'DeeperGCN',"EdgeDrop",'simpleGCN','G2_GNN'])
     parser.add_argument('--type_trick', type=str, default="None")
     # parser.add_argument('--layer_agg', type=str, default='concat',
     #                     choices=['concat', 'maxpool', 'attention', 'mean'],
@@ -155,6 +155,17 @@ def arg_parse():
                         help='normalize the adjacency matrix or not')
     parser.add_argument('--gcn_norm_type', type=str, default='sym', choices=['sym', 'rw'])
 
+
+
+    # Hyperparameters for G2-GNN
+    parser.add_argument('--p', type=int, default=2.5,help='exponent p in G^2')
+    parser.add_argument('--drop_in', type=float, default=0.3,
+                        help='input dropout rate')
+    parser.add_argument('--use_gg_conv', type=str_to_bool, default=True,
+                        help='if use the graph gradient on plain GNN')
+    parser.add_argument('--conv_type', type=str, default='GraphSAGE', choices=['GraphSAGE', 'GCN', 'GAT'])
+    parser.add_argument('--drop_G2', type=float, default=0.2,
+                        help='dropout rate for G2 output layer')
     args = parser.parse_args()
     args = reset_dataset_dependent_parameters(args)
     return args
