@@ -77,7 +77,7 @@ def load_data(dataset, type_split="pair",dataset_name=None,precisition="float32"
         if label_noise:
             # sample_root_indices = np.array(data.y)
             # data.y_original = copy.deepcopy(data.y)
-            noise_rate = 0.1
+            noise_rate = 0.2
             train_indices = np.where(data.train_mask)[0]
             data.y = np.array(data.y)
             # num_samples = int(len(train_indices) * 0.02)

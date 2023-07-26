@@ -2,13 +2,14 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 from torch_geometric.nn import GCNConv
-from torch_geometric.utils import dropout_adj
+from torch_geometric.utils import dropout_adj, dropout_edge
 
 
 class EdgeDrop(nn.Module):
     def __init__(self, args):
         super(EdgeDrop, self).__init__()
-
+        for k, v in vars(args).items():
+            setattr(self, k, v)
         self.dataset = args.dataset
         self.num_layers = args.num_layers
         self.num_feats = args.num_feats
@@ -40,7 +41,7 @@ class EdgeDrop(nn.Module):
         # implemented based on GCNModel: https://github.com/DropEdge/DropEdge/blob/master/src/models.py
         # Baseblock MultiLayerGCNBlock with nbaseblocklayer=1
 
-        edge_index, _ = dropout_adj(edge_index, p=self.edge_dropout,
+        edge_index, _ = dropout_edge(edge_index, p=self.edge_dropout,
                                     force_undirected=False, training=self.training)
 
         for i in range(self.num_layers-1):

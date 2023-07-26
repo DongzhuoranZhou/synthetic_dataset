@@ -159,6 +159,7 @@ if __name__ == "__main__":
     type_models_list = ["G2_GNN"]
     type_models_list = ["GCN"]
     type_models_list = ["GAT"]
+    type_models_list = ["G2_GNN"]
     # type_models_list = ["SAGE"]
     # type_models_list = ["GAT"]
     # type_models_list = ['GPRGNN']
@@ -170,7 +171,7 @@ if __name__ == "__main__":
     # type_models_list = ['GPRGNN']
     # type_models_list = ['APPNP']
     # type_norm_list = ['pair', 'None', 'batch','group',]
-    type_norm_list = ['batch']
+    type_norm_list = ['None']
 
     # type_norm_list = ['group']
     # type_norm_list = ['group', 'None']
