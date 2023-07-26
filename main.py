@@ -121,7 +121,7 @@ def run_all(args,num_layers_lst,logdir_root='logs'):
 
         # dataset_name = "dataset/{}/width_{}/G_{}_pairs_depth_{}_width_{}_hdim_{}_high_gap_True_backup.pt".format(args.dataset,width,num_pairs,16,width,
         #                                                                                   num_feature)
-        args.num_layers = num_layers
+        args.num_layers = num_layers *2
         args.dataset_name = dataset_name
         mean_train_acc, std_train_acc, mean_test_acc, std_test_acc = main(args)
         acc_lst.append((mean_train_acc, std_train_acc, mean_test_acc, std_test_acc))
@@ -159,7 +159,7 @@ if __name__ == "__main__":
     type_models_list = ["G2_GNN"]
     type_models_list = ["GCN"]
     type_models_list = ["GAT"]
-    type_models_list = ["G2_GNN"]
+    type_models_list = ["SAGE"]
     # type_models_list = ["SAGE"]
     # type_models_list = ["GAT"]
     # type_models_list = ['GPRGNN']
@@ -184,7 +184,7 @@ if __name__ == "__main__":
     # type_trick_list = ['None']
     # num_layers_lst = [3,4,6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     num_layers_lst = [3, 4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
-    num_layers_lst = [4]
+    num_layers_lst = [8]
     # num_layers_lst   = [24]
     # num_layers_lst = list(range(15, 33, 2))
     # num_layers_lst = [20]

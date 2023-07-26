@@ -166,6 +166,10 @@ def arg_parse():
     parser.add_argument('--conv_type', type=str, default='GraphSAGE', choices=['GraphSAGE', 'GCN', 'GAT'])
     parser.add_argument('--drop_G2', type=float, default=0.2,
                         help='dropout rate for G2 output layer')
+
+
+    # Hyperparameters for GrahpSAGE
+    parser.add_argument('--aggr', type=str, default='mean', choices=['mean', 'max'])
     args = parser.parse_args()
     args = reset_dataset_dependent_parameters(args)
     return args
