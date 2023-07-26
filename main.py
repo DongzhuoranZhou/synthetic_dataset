@@ -178,7 +178,7 @@ if __name__ == "__main__":
     # type_norm_list = ['None']
     # type_trick_list = ['Residual', 'None']
     type_trick_list = ['None']
-    type_trick_list = ['None', 'max']
+    type_trick_list = ['max']
     # type_models_list = ['simpleGCN']
     # type_norm_list = ['GPRGNN']
     # type_norm_list = ['None']
@@ -211,11 +211,14 @@ if __name__ == "__main__":
                 if trick_type == 'Residual':
                     if model_type != 'GCN' or norm_type != 'None':
                         continue
-                if trick_type == 'mean' or 'max':
-                    if model_type != 'SAGE':
+                if trick_type in ['None', 'max', 'mean'] and model_type == 'SAGE':
+                    if norm_type != 'None':
                         continue
                     else:
-                        args.aggr = trick_type
+                        if trick_type == 'None':
+                            args.aggr = 'mean'
+                        else:
+                            args.aggr = trick_type
 
                 param_combinations.append(params)
     # Run
