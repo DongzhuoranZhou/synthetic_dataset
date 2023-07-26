@@ -225,4 +225,4 @@ if __name__ == "__main__":
         print(param_combination)
         for key, value in param_combination.items():
             setattr(args, key, value)
-        # run_all(args,num_layers_lst,logdir_root=args.logdir_root)
+        run_all(args,num_layers_lst,logdir_root=args.logdir_root)

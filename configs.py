@@ -92,7 +92,7 @@ def arg_parse():
     parser.add_argument('--random_seed', type=int, default=100)
     parser.add_argument('--N_exp', type=int, default=100)
     parser.add_argument('--resume', action='store_true', default=False)
-    parser.add_argument("--cuda", type=bool, default=True, required=False,
+    parser.add_argument("--cuda", type=str_to_bool, default=True,
                         help="reproduce in cuda mode")
     parser.add_argument('--cuda_num', type=int, default=0, help="GPU number")
     # parser.add_argument('--log_file_name', type=str, default='time_and_memory.log')
