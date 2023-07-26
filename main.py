@@ -159,7 +159,7 @@ if __name__ == "__main__":
     type_models_list = ["G2_GNN"]
     type_models_list = ["GCN"]
     type_models_list = ["GAT"]
-    type_models_list = ["SAGE"]
+    type_models_list = ["GAT","SAGE"]
     # type_models_list = ["SAGE"]
     # type_models_list = ["GAT"]
     # type_models_list = ['GPRGNN']
@@ -171,14 +171,14 @@ if __name__ == "__main__":
     # type_models_list = ['GPRGNN']
     # type_models_list = ['APPNP']
     # type_norm_list = ['pair', 'None', 'batch','group',]
-    type_norm_list = ['None']
+    type_norm_list = ['None','batch']
 
     # type_norm_list = ['group']
     # type_norm_list = ['group', 'None']
     # type_norm_list = ['None']
     # type_trick_list = ['Residual', 'None']
     type_trick_list = ['None']
-    type_trick_list = ['max']
+    type_trick_list = ['max','None']
     # type_models_list = ['simpleGCN']
     # type_norm_list = ['GPRGNN']
     # type_norm_list = ['None']
@@ -199,11 +199,7 @@ if __name__ == "__main__":
     for model_type in type_models_list:
         for norm_type in type_norm_list:
             for trick_type in type_trick_list:
-                params = {
-                    'type_model': model_type,
-                    'type_norm': norm_type,
-                    'type_trick': trick_type
-                }
+
                 if norm_type != 'None' and model_type not in ['GCN', 'GAT', 'SGC']:
                     continue
                 # if trick_type != 'None' and norm_type != 'None' and model_type != 'GCN':
@@ -211,19 +207,22 @@ if __name__ == "__main__":
                 if trick_type == 'Residual':
                     if model_type != 'GCN' or norm_type != 'None':
                         continue
-                if trick_type in ['None', 'max', 'mean'] and model_type == 'SAGE':
-                    if norm_type != 'None':
-                        continue
-                    else:
-                        if trick_type == 'None':
-                            args.aggr = 'mean'
-                        else:
-                            args.aggr = trick_type
 
+                if trick_type == 'None' and  model_type == 'SAGE':
+                    trick_type = 'mean'
+                if trick_type in ['max', 'mean']:
+                    if model_type != 'SAGE':
+                        continue
+                    args.aggr = trick_type
+                params = {
+                    'type_model': model_type,
+                    'type_norm': norm_type,
+                    'type_trick': trick_type
+                }
                 param_combinations.append(params)
     # Run
     for param_combination in param_combinations:
         print(param_combination)
         for key, value in param_combination.items():
             setattr(args, key, value)
-        run_all(args,num_layers_lst,logdir_root=args.logdir_root)
+        # run_all(args,num_layers_lst,logdir_root=args.logdir_root)
