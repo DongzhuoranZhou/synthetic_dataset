@@ -178,13 +178,14 @@ if __name__ == "__main__":
     # type_norm_list = ['None']
     # type_trick_list = ['Residual', 'None']
     type_trick_list = ['None']
+    type_trick_list = ['None', 'max']
     # type_models_list = ['simpleGCN']
     # type_norm_list = ['GPRGNN']
     # type_norm_list = ['None']
     # type_trick_list = ['None']
     # num_layers_lst = [3,4,6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
     num_layers_lst = [3, 4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32]
-    num_layers_lst = [8]
+    num_layers_lst = [3]
     # num_layers_lst   = [24]
     # num_layers_lst = list(range(15, 33, 2))
     # num_layers_lst = [20]
@@ -210,6 +211,11 @@ if __name__ == "__main__":
                 if trick_type == 'Residual':
                     if model_type != 'GCN' or norm_type != 'None':
                         continue
+                if trick_type == 'mean' or 'max':
+                    if model_type != 'SAGE':
+                        continue
+                    else:
+                        args.aggr = trick_type
 
                 param_combinations.append(params)
     # Run
