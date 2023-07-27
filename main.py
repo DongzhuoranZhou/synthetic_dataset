@@ -178,7 +178,7 @@ if __name__ == "__main__":
     # type_norm_list = ['None']
     # type_trick_list = ['Residual', 'None']
     type_trick_list = ['None']
-    type_trick_list = ['max','None']
+    type_trick_list = ['Residual','None']
     # type_models_list = ['simpleGCN']
     # type_norm_list = ['GPRGNN']
     # type_norm_list = ['None']
@@ -208,12 +208,14 @@ if __name__ == "__main__":
                     if model_type != 'GCN' or norm_type != 'None':
                         continue
 
-                if trick_type == 'None' and  model_type == 'SAGE':
+                if trick_type == 'None' and model_type == 'SAGE':
                     trick_type = 'mean'
                 if trick_type in ['max', 'mean']:
                     if model_type != 'SAGE':
                         continue
+                if model_type == 'SAGE':
                     args.aggr = trick_type
+
                 params = {
                     'type_model': model_type,
                     'type_norm': norm_type,
@@ -223,6 +225,7 @@ if __name__ == "__main__":
     # Run
     for param_combination in param_combinations:
         print(param_combination)
+        print('cuda: ', args.cuda)
         for key, value in param_combination.items():
             setattr(args, key, value)
-        run_all(args,num_layers_lst,logdir_root=args.logdir_root)
+        # run_all(args,num_layers_lst,logdir_root=args.logdir_root)
